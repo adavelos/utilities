@@ -2,7 +2,7 @@ package argonath.utils.test;
 
 
 import argonath.utils.Assert;
-import argonath.utils.XPath;
+import argonath.utils.xpath.model.XPath;
 import org.junit.jupiter.api.Test;
 
 public class TestXPath {

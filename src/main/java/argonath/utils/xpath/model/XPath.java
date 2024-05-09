@@ -1,6 +1,7 @@
-package argonath.utils;
+package argonath.utils.xpath.model;
 
-import org.apache.commons.lang3.tuple.Pair;
+import argonath.utils.Assert;
+import argonath.utils.xpath.XPathUtil;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -8,71 +9,25 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class XPath {
-    private List<Element> elements;
+    private List<XPathElement> elements;
 
-    public XPath(List<Element> elements) {
+    public XPath(List<XPathElement> elements) {
         this.elements = elements;
     }
 
     public static XPath parse(String path) {
+        Assert.isTrue(XPathUtil.isValid(path), "Invalid XPath: " + path);
         String canonicalPath = XPathUtil.canonicalPath(path);
-        List<Element> elements = XPathUtil.split(canonicalPath).stream()
-                .map(Element::parse)
+        List<XPathElement> elements = XPathUtil.split(canonicalPath).stream()
+                .map(XPathElement::parse)
                 .collect(Collectors.toList());
         return new XPath(elements);
     }
 
-    public List<Element> elements() {
+    public List<XPathElement> elements() {
         return elements;
     }
 
-    public static class Element {
-
-        /**
-         * The name of the element (in Object graph corresponds to a variable name)
-         */
-        private String name;
-
-        /**
-         * There are two selector types:
-         * - single values (can be a number, a string, etc.)
-         * (values are interpreted differently depending the context: a number in a List is an index, in a Map it's a key, etc.)
-         * - expressions (e.g. [id=c1], [index()<3], [text()!='foo'], etc.)
-         */
-        private Selector selector;
-
-        static Element parse(String elementStr) {
-            Pair<String, String> parsedElement = ExpressionUtil.parseBrackets(elementStr);
-            return new Element(parsedElement.getLeft(), parseSelector(parsedElement.getRight()));
-        }
-
-        private static Selector parseSelector(String selectorExpr) {
-            if (selectorExpr == null) {
-                return null;
-            }
-            Selector ret;
-            try {
-                ret = ExpressionSelector.parse(selectorExpr);
-
-            } catch (IllegalArgumentException e) {
-                ret = new ValueSelector(selectorExpr);
-            }
-            return ret;
-        }
-
-        private Element(String name, Selector selector) {
-            this.name = name;
-            this.selector = selector;
-        }
-
-        public String name() {
-            return name;
-        }
-
-        public Selector selector() {
-            return selector;
-        }
-    }
 
     public interface Selector {
     }

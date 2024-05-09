@@ -1,4 +1,6 @@
-package argonath.utils;
+package argonath.utils.xpath.model;
+
+import argonath.utils.xpath.XPathUtil;
 
 import java.util.Arrays;
 import java.util.List;

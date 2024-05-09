@@ -1,5 +1,6 @@
-package argonath.utils;
+package argonath.utils.xpath;
 
+import argonath.utils.Assert;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -31,7 +32,7 @@ public class XPathUtil {
      * Create an X-Path expression from an array of String elements.
      */
     public static String create(String... elements) {
-        if (elements == null) {
+        if (elements == null || elements.length == 0) {
             return ROOT;
         }
         return create(Arrays.asList(elements));
@@ -109,15 +110,17 @@ public class XPathUtil {
     }
 
     private static boolean isValidElement(String element) {
-        String variablePart = getElementFromBrackets(element);
-        boolean validVariable = JavaRules.validVariableName(variablePart);
+        Pair<String, String> variablePart = ExpressionUtil.parseBrackets(element);
+        if (variablePart == null) {
+            return false;
+        }
+        String elementName = variablePart.getLeft();
+        boolean validVariable = JavaRules.validVariableName(elementName);
+        String expression = variablePart.getRight();
+        if (expression != null) {
+            validVariable = validVariable && StringUtils.isNotEmpty(expression);
+        }
         return validVariable;
-    }
-
-    // internal methods for parsing X-Path elements with brackets
-    private static String getElementFromBrackets(String element) {
-        Pair<String, String> parsedElement = ExpressionUtil.parseBrackets(element);
-        return parsedElement.getKey();
     }
 
     /**

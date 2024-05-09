@@ -1,4 +1,4 @@
-package argonath.utils;
+package argonath.utils.xpath;
 
 import java.util.regex.Pattern;
 

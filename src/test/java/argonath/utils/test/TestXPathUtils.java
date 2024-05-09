@@ -1,7 +1,7 @@
 package argonath.utils.test;
 
 import argonath.utils.Assert;
-import argonath.utils.XPathUtil;
+import argonath.utils.xpath.XPathUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
