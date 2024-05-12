@@ -142,4 +142,8 @@ public class XPathUtil {
         return ret;
     }
 
+    public static String combine(List<String> elements) {
+        String merged = elements.stream().collect(Collectors.joining(SEP, "/", ""));
+        return canonicalPath(merged);
+    }
 }

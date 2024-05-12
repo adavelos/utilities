@@ -1,8 +1,7 @@
 package argonath.utils.xpath.model;
 
-import argonath.utils.Assert;
+import argonath.utils.reflection.ReflectiveAccessor;
 import argonath.utils.xpath.ExpressionUtil;
-import argonath.utils.xpath.XPathUtil;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class XPathElement {
@@ -11,6 +10,11 @@ public class XPathElement {
      * The name of the element (in Object graph corresponds to a variable name)
      */
     private String name;
+
+    /**
+     * Name including the selector expression
+     */
+    private String expressionString;
 
     /**
      * There are two selector types:
@@ -22,12 +26,12 @@ public class XPathElement {
 
     static XPathElement parse(String elementStr) {
         Pair<String, String> parsedElement = ExpressionUtil.parseBrackets(elementStr);
-        return new XPathElement(parsedElement.getLeft(), parseSelector(parsedElement.getRight()));
+        return new XPathElement(elementStr, parsedElement.getLeft(), parseSelector(parsedElement.getRight()));
     }
 
     private static XPath.Selector parseSelector(String selectorExpr) {
         if (selectorExpr == null) {
-            return null;
+            return new XPath.IdentitySelector();
         }
         XPath.Selector ret;
         try {
@@ -39,7 +43,8 @@ public class XPathElement {
         return ret;
     }
 
-    private XPathElement(String name, XPath.Selector selector) {
+    private XPathElement(String expressionString, String name, XPath.Selector selector) {
+        this.expressionString = expressionString;
         this.name = name;
         this.selector = selector;
     }
@@ -50,5 +55,14 @@ public class XPathElement {
 
     public XPath.Selector selector() {
         return selector;
+    }
+
+    public String expressionString() {
+        return expressionString;
+    }
+
+    public Object apply(Object object) {
+        Object selectedObject = ReflectiveAccessor.getFieldValue(object, name);
+        return selector.apply(selectedObject);
     }
 }

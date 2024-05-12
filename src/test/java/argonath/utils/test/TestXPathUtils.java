@@ -1,7 +1,7 @@
 package argonath.utils.test;
 
-import argonath.utils.Assert;
 import argonath.utils.xpath.XPathUtil;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -11,98 +11,109 @@ public class TestXPathUtils {
     @Test
     public void testXPathCreate() {
         // Varargs
-        Assert.isTrue(XPathUtil.create("test").equals("/test"), "XPath Build - Single Vararg");
-        Assert.isTrue(XPathUtil.create("test", "second").equals("/test/second"), "XPath Build - Double Varargs");
-        Assert.isTrue(XPathUtil.create().equals("/"), "XPath Build - Empty Arg");
+        Assertions.assertEquals("/test", XPathUtil.create("test"), "XPath Build - Single Vararg");
+        Assertions.assertEquals("/test/second", XPathUtil.create("test", "second"), "XPath Build - Double Varargs");
+        Assertions.assertEquals("/", XPathUtil.create(), "XPath Build - Empty Arg");
         String[] arr1 = {"test", "second"};
-        Assert.isTrue(XPathUtil.create(arr1).equals("/test/second"), "XPath Build - Array");
+        Assertions.assertEquals("/test/second", XPathUtil.create(arr1), "XPath Build - Array");
         String[] arr2 = null;
-        Assert.isTrue(XPathUtil.create(arr2).equals("/"), "XPath Build - Null Array");
+        Assertions.assertEquals("/", XPathUtil.create(arr2), "XPath Build - Null Array");
 
         // Collections
         Collection<String> col = Arrays.asList("test", "second");
-        Assert.isTrue(XPathUtil.create(col).equals("/test/second"), "XPath Build - List");
-        Set<String> col2 = new TreeSet(Arrays.asList("test", "second"));
-        Assert.isTrue(XPathUtil.create(col2).equals("/second/test"), "XPath Build - Set");
+        Assertions.assertEquals("/test/second", XPathUtil.create(col), "XPath Build - List");
+        Set<String> col2 = new TreeSet<>(Arrays.asList("test", "second"));
+        Assertions.assertEquals("/second/test", XPathUtil.create(col2), "XPath Build - Set");
     }
 
     @Test
     public void testXPathAppend() {
-        Assert.isTrue(XPathUtil.append("/head", "second", "third").equals("/head/second/third"), "XPath Build - Append Varargs");
-        Assert.isTrue(XPathUtil.append("/head", "/second/third", "fourth").equals("/head/second/third/fourth"), "XPath Build - Append Varargs Combo");
-        Assert.isTrue(XPathUtil.append("/head", "second").equals("/head/second"), "XPath Build - Append Single Vararg");
-        Assert.isTrue(XPathUtil.append("/head", "second", "/").equals("/head/second"), "XPath Build - Append Non Canonical Vararg");
-        Assert.isTrue(XPathUtil.append("/head", "/", "/second").equals("/head/second"), "XPath Build - Append Non Canonical Vararg 2");
-        Assert.isTrue(XPathUtil.append("/head/second", "/", "/").equals("/head/second"), "XPath Build - Append Non Canonical Varargs");
-        Assert.isTrue(XPathUtil.append("/head/second", Arrays.asList("/third", "fourth")).equals("/head/second/third/fourth"), "XPath Build - Append Collection");
+        Assertions.assertEquals("/head/second/third", XPathUtil.append("/head", "second", "third"), "XPath Build - Append Varargs");
+        Assertions.assertEquals("/head/second/third/fourth", XPathUtil.append("/head", "/second/third", "fourth"), "XPath Build - Append Varargs Combo");
+        Assertions.assertEquals("/head/second", XPathUtil.append("/head", "second"), "XPath Build - Append Single Vararg");
+        Assertions.assertEquals("/head/second", XPathUtil.append("/head", "second", "/"), "XPath Build - Append Non Canonical Vararg");
+        Assertions.assertEquals("/head/second", XPathUtil.append("/head", "/", "/second"), "XPath Build - Append Non Canonical Vararg 2");
+        Assertions.assertEquals("/head/second", XPathUtil.append("/head/second", "/", "/"), "XPath Build - Append Non Canonical Varargs");
+        Assertions.assertEquals("/head/second/third/fourth", XPathUtil.append("/head/second", Arrays.asList("/third", "fourth")), "XPath Build - Append Collection");
     }
 
     @Test
     public void testXPathPrepend() {
-        Assert.isTrue(XPathUtil.prepend("/tail", "second", "third").equals("/second/third/tail"), "XPath Build - Prepend Varargs");
-        Assert.isTrue(XPathUtil.prepend("/tail", "/second/third", "fourth").equals("/second/third/fourth/tail"), "XPath Build - Prepend Varargs Combo");
-        Assert.isTrue(XPathUtil.prepend("/tail", "second").equals("/second/tail"), "XPath Build - Prepend Single Vararg");
-        Assert.isTrue(XPathUtil.prepend("/tail", "second", "/").equals("/second/tail"), "XPath Build - Prepend Non Canonical Vararg");
-        Assert.isTrue(XPathUtil.prepend("/tail", "/", "/second").equals("/second/tail"), "XPath Build - Prepend Non Canonical Vararg 2");
-        Assert.isTrue(XPathUtil.prepend("/tail/last", "/", "/").equals("/tail/last"), "XPath Build - Prepend Non Canonical Varargs");
-        Assert.isTrue(XPathUtil.prepend("/tail/last", Arrays.asList("/first", "second")).equals("/first/second/tail/last"), "XPath Build - Prepend Collection");
+        Assertions.assertEquals("/second/third/tail", XPathUtil.prepend("/tail", "second", "third"), "XPath Build - Prepend Varargs");
+        Assertions.assertEquals("/second/third/fourth/tail", XPathUtil.prepend("/tail", "/second/third", "fourth"), "XPath Build - Prepend Varargs Combo");
+        Assertions.assertEquals("/second/tail", XPathUtil.prepend("/tail", "second"), "XPath Build - Prepend Single Vararg");
+        Assertions.assertEquals("/second/tail", XPathUtil.prepend("/tail", "second", "/"), "XPath Build - Prepend Non Canonical Vararg");
+        Assertions.assertEquals("/second/tail", XPathUtil.prepend("/tail", "/", "/second"), "XPath Build - Prepend Non Canonical Vararg 2");
+        Assertions.assertEquals("/tail/last", XPathUtil.prepend("/tail/last", "/", "/"), "XPath Build - Prepend Non Canonical Varargs");
+        Assertions.assertEquals("/first/second/tail/last", XPathUtil.prepend("/tail/last", Arrays.asList("/first", "second")), "XPath Build - Prepend Collection");
     }
 
     @Test
     public void testCanonicalPath() {
-        Assert.isTrue(XPathUtil.canonicalPath("/test/second").equals("/test/second"), "Canonical Path - No change");
-        Assert.isTrue(XPathUtil.canonicalPath("test//second").equals("test/second"), "Canonical Path - Relative Path");
-        Assert.isTrue(XPathUtil.canonicalPath("//test/second").equals("/test/second"), "Canonical Path - Invalid Head");
-        Assert.isTrue(XPathUtil.canonicalPath("/test////second").equals("/test/second"), "Canonical Path - Multiple Slashes");
-        Assert.isTrue(XPathUtil.canonicalPath("/test/second////").equals("/test/second"), "Canonical Path - Trailing Slashes");
-        Assert.isTrue(XPathUtil.canonicalPath("/test/second///third/////fourth///").equals("/test/second/third/fourth"), "Canonical Path - Multi Paths");
+        Assertions.assertEquals("/test/second", XPathUtil.canonicalPath("/test/second"), "Canonical Path - No change");
+        Assertions.assertEquals("test/second", XPathUtil.canonicalPath("test//second"), "Canonical Path - Relative Path");
+        Assertions.assertEquals("/test/second", XPathUtil.canonicalPath("//test/second"), "Canonical Path - Invalid Head");
+        Assertions.assertEquals("/test/second", XPathUtil.canonicalPath("/test////second"), "Canonical Path - Multiple Slashes");
+        Assertions.assertEquals("/test/second", XPathUtil.canonicalPath("/test/second////"), "Canonical Path - Trailing Slashes");
+        Assertions.assertEquals("/test/second/third/fourth", XPathUtil.canonicalPath("/test/second///third/////fourth///"), "Canonical Path - Multi Paths");
     }
 
     @Test
     public void testSplit() {
-        Assert.isTrue(XPathUtil.split("").size() == 0, "Split Empty String");
-        Assert.isTrue(XPathUtil.split("/").size() == 0, "Split Root Path");
-        Assert.isTrue(XPathUtil.split("//").size() == 0, "Split Root Path - double slashes");
-        Assert.isTrue(XPathUtil.split("/test").get(0).equals("test"), "Split Root Path - Single");
-        Assert.isTrue(XPathUtil.split("test").get(0).equals("test"), "Split Root Path - Single - Relative");
+        Assertions.assertEquals(XPathUtil.split("").size(), 0, "Split Empty String");
+        Assertions.assertEquals(XPathUtil.split("/").size(), 0, "Split Root Path");
+        Assertions.assertEquals(XPathUtil.split("//").size(), 0, "Split Root Path - double slashes");
+        Assertions.assertEquals("test", XPathUtil.split("/test").get(0), "Split Root Path - Single");
+        Assertions.assertEquals("test", XPathUtil.split("test").get(0), "Split Root Path - Single - Relative");
         List<String> split1 = XPathUtil.split("/test/second");
-        Assert.isTrue(split1.get(0).equals("test"), "Split Root Path - first");
-        Assert.isTrue(split1.get(1).equals("second"), "Split Root Path - second");
+        Assertions.assertEquals("test", split1.get(0), "Split Root Path - first");
+        Assertions.assertEquals("second", split1.get(1), "Split Root Path - second");
     }
 
     @Test
     public void testIsValid() {
-        Assert.isTrue(XPathUtil.isValid("/test/element"), "Simple Valid Path");
-        Assert.isTrue(XPathUtil.isValid("/test//element"), "NonCanonical Valid Path");
-        Assert.isTrue(XPathUtil.isValid("test//element"), "NonCanonical Relative Valid Path");
-        Assert.isTrue(XPathUtil.isValid("_valid"), "Valid Element - underscore");
-        Assert.isTrue(XPathUtil.isValid("$valid"), "Valid Element - dollar");
-        Assert.isTrue(XPathUtil.isValid("test_valid"), "Invalid Element - underscore mid");
-        Assert.isTrue(XPathUtil.isValid("test$valid"), "Invalid Element - dollar mid");
-        Assert.isTrue(!XPathUtil.isValid("/test/1invalid"), "Invalid Element - start with number");
-        Assert.isTrue(!XPathUtil.isValid("/_/invalid"), "Invalid Element - single underscore");
-        Assert.isTrue(!XPathUtil.isValid("//invalid element"), "Invalid Element - space");
-        Assert.isTrue(!XPathUtil.isValid("//invalid\telement"), "Invalid Element - tab");
-        Assert.isTrue(!XPathUtil.isValid("//invalid#element"), "Invalid Element - special char");
+        Assertions.assertTrue(XPathUtil.isValid("/test/element"), "Simple Valid Path");
+        Assertions.assertTrue(XPathUtil.isValid("/test//element"), "NonCanonical Valid Path");
+        Assertions.assertTrue(XPathUtil.isValid("test//element"), "NonCanonical Relative Valid Path");
+        Assertions.assertTrue(XPathUtil.isValid("_valid"), "Valid Element - underscore");
+        Assertions.assertTrue(XPathUtil.isValid("$valid"), "Valid Element - dollar");
+        Assertions.assertTrue(XPathUtil.isValid("test_valid"), "Invalid Element - underscore mid");
+        Assertions.assertTrue(XPathUtil.isValid("test$valid"), "Invalid Element - dollar mid");
+        Assertions.assertFalse(XPathUtil.isValid("/test/1invalid"), "Invalid Element - start with number");
+        Assertions.assertFalse(XPathUtil.isValid("/_/invalid"), "Invalid Element - single underscore");
+        Assertions.assertFalse(XPathUtil.isValid("//invalid element"), "Invalid Element - space");
+        Assertions.assertFalse(XPathUtil.isValid("//invalid\telement"), "Invalid Element - tab");
+        Assertions.assertFalse(XPathUtil.isValid("//invalid#element"), "Invalid Element - special char");
 
         // Brackets
-        Assert.isTrue(XPathUtil.isValid("/test/element[1]/test"), "Brackets");
-        Assert.isTrue(XPathUtil.isValid("/test/element[1]/test[val]"), "Multi Element Brackets");
-        Assert.isTrue(XPathUtil.isValid("test[str]"), "Single Element Brackets");
-        Assert.isTrue(!XPathUtil.isValid("test[]"), "Empty Brackets");
-        Assert.isTrue(!XPathUtil.isValid("test[xczx]test"), "Invalid Brackets");
+        Assertions.assertTrue(XPathUtil.isValid("/test/element[1]/test"), "Brackets");
+        Assertions.assertTrue(XPathUtil.isValid("/test/element[1]/test[val]"), "Multi Element Brackets");
+        Assertions.assertTrue(XPathUtil.isValid("test[str]"), "Single Element Brackets");
+        Assertions.assertFalse(XPathUtil.isValid("test[]"), "Empty Brackets");
+        Assertions.assertFalse(XPathUtil.isValid("test[xczx]test"), "Invalid Brackets");
     }
 
     @Test
     public void testStripQuotes() {
-        Assert.isTrue(XPathUtil.stripQuotes("\"test\"").equals("test"), "Strip Quotes - Double");
-        Assert.isTrue(XPathUtil.stripQuotes("'test'").equals("test"), "Strip Quotes - Single");
-        Assert.isTrue(XPathUtil.stripQuotes("test").equals("test"), "Strip Quotes - None");
-        Assert.isTrue(XPathUtil.stripQuotes("\"test").equals("\"test"), "Strip Quotes - Mismatch");
-        Assert.isTrue(XPathUtil.stripQuotes("test\"").equals("test\""), "Strip Quotes - Mismatch 2");
-        Assert.isTrue(XPathUtil.stripQuotes("").equals(""), "Strip Quotes - Empty");
-        Assert.isTrue(XPathUtil.stripQuotes(" ").equals(" "), "Strip Quotes - Single Space");
-        Assert.isTrue(XPathUtil.stripQuotes(null) == null, "Strip Quotes - Null");
+        Assertions.assertEquals("test", XPathUtil.stripQuotes("\"test\""), "Strip Quotes - Double");
+        Assertions.assertEquals("test", XPathUtil.stripQuotes("'test'"), "Strip Quotes - Single");
+        Assertions.assertEquals("test", XPathUtil.stripQuotes("test"), "Strip Quotes - None");
+        Assertions.assertEquals("\"test", XPathUtil.stripQuotes("\"test"), "Strip Quotes - Mismatch");
+        Assertions.assertEquals("test\"", XPathUtil.stripQuotes("test\""), "Strip Quotes - Mismatch 2");
+        Assertions.assertEquals("", XPathUtil.stripQuotes(""), "Strip Quotes - Empty");
+        Assertions.assertEquals(" ", XPathUtil.stripQuotes(" "), "Strip Quotes - Single Space");
+        Assertions.assertNull(XPathUtil.stripQuotes(null), "Strip Quotes - Null");
+    }
+
+    @Test
+    public void testCombine() {
+        Assertions.assertEquals("/test/element", XPathUtil.combine(List.of("test", "element")), "Combine - Simple");
+        Assertions.assertEquals("/test/element/path", XPathUtil.combine(List.of("test", "element", "path")), "Combine - Multi");
+        // test with trailing slash
+        Assertions.assertEquals("/test/element/path", XPathUtil.combine(List.of("test", "element", "path/")), "Combine - Multi with trailing slash");
+        // test with leading slash
+        Assertions.assertEquals("/test/element/path", XPathUtil.combine(List.of("/test", "element", "path")), "Combine - Multi with leading slash");
+
     }
 }
 
