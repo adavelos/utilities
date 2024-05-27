@@ -1,6 +1,7 @@
 package argonath.utils.xpath;
 
 import argonath.utils.Assert;
+import argonath.utils.reflector.ExpressionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -115,7 +116,7 @@ public class XPathUtil {
             return false;
         }
         String elementName = variablePart.getLeft();
-        boolean validVariable = JavaRules.validVariableName(elementName);
+        boolean validVariable = LanguageRules.validVariableName(elementName);
         String expression = variablePart.getRight();
         if (expression != null) {
             validVariable = validVariable && StringUtils.isNotEmpty(expression);

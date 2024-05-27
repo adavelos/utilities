@@ -1,4 +1,4 @@
-package argonath.utils.xpath.model;
+package argonath.utils.reflector.reader.filter;
 
 import argonath.utils.xpath.XPathUtil;
 
@@ -40,5 +40,33 @@ public class Method {
 
     public List<String> args() {
         return args;
+    }
+
+
+    public interface Token {
+    }
+
+    public static class ValueToken implements Token {
+        private String value;
+
+        public ValueToken(String value) {
+            this.value = value;
+        }
+
+        public String value() {
+            return value;
+        }
+    }
+
+    public static class MethodToken implements Token {
+        private Method method;
+
+        public MethodToken(Method method) {
+            this.method = method;
+        }
+
+        public Method method() {
+            return method;
+        }
     }
 }

@@ -1,14 +1,13 @@
 package argonath.utils.test;
 
-import argonath.utils.api.ObjectReader;
+import argonath.utils.reflector.reader.ObjectReader;
+import argonath.utils.reflector.reader.types.Collections;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class TestObjectReader {
 
@@ -58,13 +57,13 @@ public class TestObjectReader {
         Assertions.assertEquals(inputObject.bigDecimalField, testObjectBigDecimal, "age is equal");
         BigInteger testObjectBigInteger = reader.get(inputObject, "/bigIntegerField", BigInteger.class);
         Assertions.assertEquals(inputObject.bigIntegerField, testObjectBigInteger, "age is equal");
-        List<String> testObjectFriends = reader.list(inputObject, "/friends", String.class);
+        Collection<String> testObjectFriends = reader.list(inputObject, "/friends", String.class);
         Assertions.assertArrayEquals(inputObject.friends.toArray(), testObjectFriends.toArray(), "friends are equal");
         byte[] testObjectData = reader.get(inputObject, "/data", byte[].class);
         Assertions.assertArrayEquals(inputObject.data, testObjectData, "data is equal");
         InnerClass testObjectInner = reader.get(inputObject, "/innerClass", InnerClass.class);
         Assertions.assertNotNull(testObjectInner, "inner is not null");
-        List<InnerClass> testObjectInnerClasses = reader.list(inputObject, "/innerClasses", InnerClass.class);
+        Collection<InnerClass> testObjectInnerClasses = reader.list(inputObject, "/innerClasses", InnerClass.class);
         Assertions.assertArrayEquals(inputObject.innerClasses.toArray(), testObjectInnerClasses.toArray(), "innerClasses are equal");
         //   List<InnerClass> testObjectInnerClasses2 = reader.get(inputObject, "/innerClasses", List.class);
         //   Assertions.assertArrayEquals(inputObject.innerClasses.toArray(), testObjectInnerClasses2.toArray(), "innerClasses are equal");
@@ -100,13 +99,13 @@ public class TestObjectReader {
         Assertions.assertEquals(innerClass.bigDecimalField, innerBigDecimal, "age is equal");
         BigInteger innerBigInteger = reader.get(inputObject, "/innerClass/bigIntegerField", BigInteger.class);
         Assertions.assertEquals(innerClass.bigIntegerField, innerBigInteger, "age is equal");
-        List<String> innerFriends = reader.list(inputObject, "/innerClass/friends", String.class);
+        Collection<String> innerFriends = reader.list(inputObject, "/innerClass/friends", String.class);
         Assertions.assertArrayEquals(innerClass.friends.toArray(), innerFriends.toArray(), "friends are equal");
         byte[] innerData = reader.get(inputObject, "/innerClass/data", byte[].class);
         Assertions.assertArrayEquals(innerClass.data, innerData, "data is equal");
 
         // Test Inner Class list
-        List<InnerClass> innerClassesList = reader.list(inputObject, "/innerClasses", InnerClass.class);
+        Collection<InnerClass> innerClassesList = reader.list(inputObject, "/innerClasses", InnerClass.class);
         Assertions.assertNotNull(innerClassesList, "innerClasses is not null");
         Assertions.assertEquals(innerClasses.size(), innerClassesList.size(), "innerClasses size is equal");
         Assertions.assertArrayEquals(innerClasses.toArray(), innerClassesList.toArray(), "innerClasses are equal");
@@ -116,7 +115,7 @@ public class TestObjectReader {
         // Null Field
         Assertions.assertNull(reader.get(inputObject, "/nullField", String.class));
         // Null List: must return empty list
-        List<String> nullList = reader.list(inputObject, "/nullList", String.class);
+        Collection<String> nullList = reader.list(inputObject, "/nullList", String.class);
         Assertions.assertNotNull(nullList, "nullList is not null");
         Assertions.assertEquals(0, nullList.size(), "nullList size is 0");
 

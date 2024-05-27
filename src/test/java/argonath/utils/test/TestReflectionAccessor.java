@@ -2,6 +2,7 @@ package argonath.utils.test;
 
 import argonath.utils.Assert;
 import argonath.utils.reflection.ReflectiveAccessor;
+import argonath.utils.reflector.reader.types.FinalTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -68,8 +69,8 @@ public class TestReflectionAccessor {
         Assertions.assertEquals("1,2,3", values, "Values of int[]{1, 2, 3} are 1, 2, 3");
 
         // test isSupportedSimpleType
-        Assertions.assertTrue(ReflectiveAccessor.isSupportedSimpleType(String.class), "String is a supported simple type");
-        Assertions.assertFalse(ReflectiveAccessor.isSupportedSimpleType(TestClass.class), "TestClass is not a supported simple type");
+        Assertions.assertTrue(FinalTypes.isFinalType(String.class), "String is a supported final type");
+        Assertions.assertFalse(FinalTypes.isFinalType(TestClass.class), "TestClass is not a supported final type");
 
         // test isByteArray
         Field dataField = ReflectiveAccessor.getField("data", TestClass.class);

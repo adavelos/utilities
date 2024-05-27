@@ -5,7 +5,7 @@ import argonath.utils.Assert;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -72,6 +72,7 @@ public class ReflectiveMutator {
         }
     }
 
+
     public static <T> T safeCast(Object object, Class<T> clazz) {
         if (object == null) {
             return null;
@@ -84,7 +85,7 @@ public class ReflectiveMutator {
     }
 
     // return safeCast that accepts List<Object> and returns List<T>
-    public static <T> List<T> safeCast(List<Object> list, Class<T> clazz) {
+    public static <T> List<T> safeCast(Collection<Object> list, Class<T> clazz) {
         if (list == null) {
             return null;
         }

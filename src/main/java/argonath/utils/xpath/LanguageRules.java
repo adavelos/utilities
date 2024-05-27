@@ -2,7 +2,7 @@ package argonath.utils.xpath;
 
 import java.util.regex.Pattern;
 
-public class JavaRules {
+public class LanguageRules {
 
     static Pattern JAVA_VARIABLE_PATTERN = Pattern.compile("[a-zA-Z_$][a-zA-Z0-9_$]*");
 
