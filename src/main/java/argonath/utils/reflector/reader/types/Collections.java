@@ -16,7 +16,7 @@ public class Collections {
     /**
      * In case the given argument is a collection of collections, this method will flatten it to a single collection.
      */
-    public static <T> Collection<T> flatten(Collection<T> rawCollection, ObjectFactoryStrategy strategy) {
+    public static <T> List<T> flatten(List<T> rawCollection) {
         if (rawCollection == null) {
             return null;
         }
@@ -27,19 +27,13 @@ public class Collections {
             return rawCollection;
         }
 
-        Collection<Collection<T>> collections = (Collection<Collection<T>>) rawCollection;
+        List<Collection<T>> collections = (List<Collection<T>>) rawCollection;
         return collections.stream()
                 .flatMap(Collection::stream)
-                .collect(Collectors.toCollection(
-                        () -> (Collection<T>)ReflectiveFactory.instantiateList(rawCollection.getClass(), strategy.defaultListClass()))
-                );
+                .collect(Collectors.toList());
     }
 
-    public static Collection<?> flatten(Collection<?> rawCollection) {
-        return flatten(rawCollection, ObjectFactoryStrategy.DEFAULT_STRATEGY);
-    }
-
-    public static List emptyList(ObjectFactoryStrategy strategy) {
+    public static <T> List<T> emptyList(ObjectFactoryStrategy strategy) {
         return ReflectiveFactory.instantiateList(strategy.defaultListClass());
     }
 

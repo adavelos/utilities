@@ -2,7 +2,6 @@ package argonath.utils.reflector.reader;
 
 import argonath.utils.reflection.ObjectFactoryStrategy;
 import argonath.utils.reflection.ReflectiveAccessor;
-import argonath.utils.reflection.ReflectiveFactory;
 import argonath.utils.reflection.ReflectiveMutator;
 import argonath.utils.reflector.reader.selector.Selector;
 import argonath.utils.reflector.reader.selector.SelectorItem;
@@ -57,8 +56,12 @@ public class ObjectReader {
 
     /**
      * Multi Value reader:
-     * - Returns a collection of the field type pointed by the XPath expression (it is the last element of the expression)
-     * - The collection type depends on the field type and the strategy used in the reader
+     * - Returns a list of the field type pointed by the XPath expression (it is the last element of the expression)
+     * - The list type depends on the field type and the strategy used in the reader
+     * <p>
+     * Note: Regardless the underlying field type, the reader will always return a list of objects, which is populated as following:
+     * - if there is multiple paths to a list field, then the reader will flatten a list of lists
+     * - if there is a list of single-value fields, then the reader will return a list of single-value fields
      */
     public <T> Collection<T> list(Object object, String path, Class<T> clazz) {
         Collection<Object> objList = list(object, path);
@@ -67,6 +70,10 @@ public class ObjectReader {
 
     /**
      * Multi-Value method that returns the list of objects without casting
+     * <p>
+     * Note: Regardless the underlying field type, the reader will always return a list of objects, which is populated as following:
+     * - if there is multiple paths to a list field, then the reader will flatten a list of lists
+     * - if there is a list of single-value fields, then the reader will return a list of single-value fields
      */
     public Collection<Object> list(Object object, String path) {
         Selector selector = Selector.parse(path);
@@ -76,28 +83,30 @@ public class ObjectReader {
     }
 
     /*
-            EXTRACTION_PROCESS:
+        -- PSEUDO CODE FOR EXTRACTION PROCESS --
+
+            (a) EXTRACTION_PROCESS:
                 INPUT: Object O, XPathElement X
                 OUTPUT: ExtractedObject (single- or multi-value)
                 STEPS:
                     1. if(X.empty) => RETURN: O 									(base case)
-                    2. EO = extract(O, X)												(extract object in path using Accessor)
+                    2. EO = extract(O, X)											(extract object in path using Accessor)
                     3. if(EO is ITERABLE TYPE) => RETURN LIST_EXTRACTION_PROCESS(O,X)	(invoke ITERATION_PROCESS)
                     4. EO' = ValueMapper(EO, X)										(apply ValueMapper)
                     5. if (EO' is FINAL TYPE) => RETURN EO'							(final type: no further processing, return current value)
                     6. else: RETURN EXTRACTION_PROCESS(EO', X.next)					(non-final type: recurse to next XPathElement)
 
-            LIST_EXTRACTION_PROCESS:
+            (b) LIST_EXTRACTION_PROCESS:
                 INPUT: ExtractedObject O, XPathElement X
                 OUTPUT: ExtractedObject (single- or multi-value)
                 STEPS:
-                    1. C(EO) = IterableType.CollectionOfIterable(O)				(construct a collection of Iterable items)
+                    1. C(EO) = IterableType.ListOfIterable(O)       				(list a collection of Iterable items)
                     2. C'(EO) = filter(C, X)  										(filter according to X.instanceSelector)
                     3. For EO(i) in C':												(iterate over filtered list)
                         - EO'(i) = EXTRACTION_PROCESS(EO'(i), X.next)				(recurse to next XPathElement)
                     4. return FLATTEN(EO''(i))										(convert list of lists to single list)
-
      */
+
     private ExtractedObject extract(Object object, SelectorItem pathElement, Context context) {
         // Base case: empty path element (when reached the last level of the path)
         if (pathElement == null) {
@@ -129,7 +138,7 @@ public class ObjectReader {
 
     private ExtractedObject extractList(Object object, SelectorItem pathElement, Context context) {
 
-        // this method is only called for LIST mode, so there is no need to check for single object results
+        // this method is only called for multi-value mode, so there is no need to check for single object results
         Collection<Object> elements = IterableTypes.asCollection(object, strategy);
 
         Collection<Object> filteredElements = pathElement.filter().apply(elements, context);
@@ -137,16 +146,14 @@ public class ObjectReader {
         // Accumulator of elements is always a List, no matter the underlying iterable type collection type
         List<Object> accumulator = filteredElements.stream()
                 .map(item -> extract(item, pathElement, context))
-                .collect(Collectors.toCollection(
-                        () -> (List<Object>) ReflectiveFactory.instantiateList(strategy.defaultListClass()))
-                );
+                .collect(Collectors.toList());
 
         // Cannot Flatten in case of GET mode
         if (context.extractMode().isGet() && accumulator.size() > 1) {
             throw new IllegalArgumentException("Cannot flatten multiple objects in GET mode");
         }
 
-        Collection<Object> flattenedList = Collections.flatten(accumulator, strategy);
+        List<Object> flattenedList = Collections.flatten(accumulator);
         return extractedObject(flattenedList, context);
     }
 

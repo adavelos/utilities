@@ -91,23 +91,23 @@ public class TestTypes {
 
     @Test
     public void testFlatten() {
-        Collection<?> inp1 = List.of("test");
-        Collection<?> out1 = Collections.flatten(inp1);
+        List<?> inp1 = List.of("test");
+        List<?> out1 = Collections.flatten(inp1);
 
         Assertions.assertTrue(out1 instanceof List, "out1 is List");
         Assertions.assertEquals(1, out1.size(), "out1 has one element");
         Assertions.assertEquals("test", out1.iterator().next(), "out1 has element 'test'");
 
-        Collection<?> inp2 = List.of("test", "test2");
-        Collection<?> out2 = Collections.flatten(inp2);
+        List<?> inp2 = List.of("test", "test2");
+        List<?> out2 = Collections.flatten(inp2);
         Assertions.assertTrue(out2 instanceof List, "out2 is ArrayList");
         Assertions.assertEquals(2, out2.size(), "out2 has two elements");
         Iterator<?> it2 = out2.iterator();
         Assertions.assertEquals("test", it2.next(), "out2 has element 'test'");
         Assertions.assertEquals("test2", it2.next(), "out2 has element 'test2'");
 
-        Collection<?> inp3 = List.of(List.of("test1", "test2"), List.of("test3", "test4"));
-        Collection<?> out3 = Collections.flatten(inp3);
+        List<?> inp3 = List.of(List.of("test1", "test2"), List.of("test3", "test4"));
+        List<?> out3 = Collections.flatten(inp3);
         Assertions.assertTrue(out3 instanceof ArrayList, "out3 is ArrayList");
         Assertions.assertEquals(4, out3.size(), "out3 has four elements");
         Iterator<?> it3 = out3.iterator();
