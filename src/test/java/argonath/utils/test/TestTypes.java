@@ -1,9 +1,7 @@
 package argonath.utils.test;
 
 import argonath.utils.reflection.ObjectFactoryStrategy;
-import argonath.utils.reflection.ReflectiveAccessor;
-import argonath.utils.reflection.ReflectiveFactory;
-import argonath.utils.reflector.reader.types.Collections;
+import argonath.utils.reflector.reader.types.CollectionUtils;
 import argonath.utils.reflector.reader.types.Numbers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class TestTypes {
 
@@ -90,41 +86,12 @@ public class TestTypes {
      */
 
     @Test
-    public void testFlatten() {
-        List<?> inp1 = List.of("test");
-        List<?> out1 = Collections.flatten(inp1);
-
-        Assertions.assertTrue(out1 instanceof List, "out1 is List");
-        Assertions.assertEquals(1, out1.size(), "out1 has one element");
-        Assertions.assertEquals("test", out1.iterator().next(), "out1 has element 'test'");
-
-        List<?> inp2 = List.of("test", "test2");
-        List<?> out2 = Collections.flatten(inp2);
-        Assertions.assertTrue(out2 instanceof List, "out2 is ArrayList");
-        Assertions.assertEquals(2, out2.size(), "out2 has two elements");
-        Iterator<?> it2 = out2.iterator();
-        Assertions.assertEquals("test", it2.next(), "out2 has element 'test'");
-        Assertions.assertEquals("test2", it2.next(), "out2 has element 'test2'");
-
-        List<?> inp3 = List.of(List.of("test1", "test2"), List.of("test3", "test4"));
-        List<?> out3 = Collections.flatten(inp3);
-        Assertions.assertTrue(out3 instanceof ArrayList, "out3 is ArrayList");
-        Assertions.assertEquals(4, out3.size(), "out3 has four elements");
-        Iterator<?> it3 = out3.iterator();
-        Assertions.assertEquals("test1", it3.next(), "out3 has element 'test1'");
-        Assertions.assertEquals("test2", it3.next(), "out3 has element 'test2'");
-        Assertions.assertEquals("test3", it3.next(), "out3 has element 'test3'");
-        Assertions.assertEquals("test4", it3.next(), "out3 has element 'test4'");
-
-    }
-
-    @Test
     public void testEmptyList() {
-        List<?> list = Collections.emptyList(ObjectFactoryStrategy.DEFAULT_STRATEGY);
+        List<?> list = CollectionUtils.emptyList(ObjectFactoryStrategy.DEFAULT_STRATEGY);
         Assertions.assertTrue(list instanceof ArrayList, "list is ArrayList");
         Assertions.assertTrue(list.isEmpty(), "list is empty");
 
-        List<?> list2 = Collections.emptyList(new ObjectFactoryStrategy(null, LinkedList.class, null));
+        List<?> list2 = CollectionUtils.emptyList(new ObjectFactoryStrategy(null, LinkedList.class, null));
         Assertions.assertTrue(list2 instanceof LinkedList, "list2 is LinkedList");
         Assertions.assertTrue(list2.isEmpty(), "list2 is empty");
     }

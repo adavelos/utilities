@@ -5,7 +5,8 @@ import argonath.utils.Assert;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -72,12 +73,16 @@ public class ReflectiveMutator {
         }
     }
 
-
     public static <T> T safeCast(Object object, Class<T> clazz) {
         if (object == null) {
             return null;
         }
-        if (clazz.isAssignableFrom(object.getClass())) {
+        if (ReflectiveAccessor.isCollection(clazz) && !ReflectiveAccessor.isCollection(object)) {
+            // it is possible that during the extraction / flattening process the collection has been unwrapped
+            T ret = ReflectiveFactory.instantiateCollection(clazz);
+            ((Collection) ret).add(object);
+            return ret;
+        } else if (clazz.isAssignableFrom(object.getClass())) {
             return clazz.cast(object);
         } else {
             throw new IllegalArgumentException("Cannot cast " + object.getClass() + " to " + clazz);

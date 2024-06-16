@@ -3,9 +3,11 @@ package argonath.utils.reflector.reader;
 import argonath.utils.reflection.ObjectFactoryStrategy;
 import argonath.utils.reflection.ReflectiveAccessor;
 import argonath.utils.reflection.ReflectiveMutator;
+import argonath.utils.reflector.reader.selector.Filter;
 import argonath.utils.reflector.reader.selector.Selector;
 import argonath.utils.reflector.reader.selector.SelectorItem;
-import argonath.utils.reflector.reader.types.Collections;
+import argonath.utils.reflector.reader.selector.ValueMapper;
+import argonath.utils.reflector.reader.types.CollectionUtils;
 import argonath.utils.reflector.reader.types.FinalTypes;
 import argonath.utils.reflector.reader.types.IterableTypes;
 
@@ -125,7 +127,7 @@ public class ObjectReader {
         }
 
         // apply value mapper
-        extractedObject = pathElement.valueMapper().apply(extractedObject, context);
+        extractedObject = ValueMapper.apply(extractedObject, pathElement.valueMapper());
 
         // if the current object is a simple type return
         if (FinalTypes.isFinalType(extractedObject)) {
@@ -141,20 +143,15 @@ public class ObjectReader {
         // this method is only called for multi-value mode, so there is no need to check for single object results
         Collection<Object> elements = IterableTypes.asCollection(object, strategy);
 
-        Collection<Object> filteredElements = pathElement.filter().apply(elements, context);
+        Collection<?> filteredElements = Filter.applyFilter(pathElement.filter(), elements, context);
 
         // Accumulator of elements is always a List, no matter the underlying iterable type collection type
-        List<Object> accumulator = filteredElements.stream()
-                .map(item -> extract(item, pathElement, context))
+        List<ExtractedObject> accumulator = filteredElements.stream()
+                .map(item -> extract(item, pathElement.next(), context))
                 .collect(Collectors.toList());
 
-        // Cannot Flatten in case of GET mode
-        if (context.extractMode().isGet() && accumulator.size() > 1) {
-            throw new IllegalArgumentException("Cannot flatten multiple objects in GET mode");
-        }
-
-        List<Object> flattenedList = Collections.flatten(accumulator);
-        return extractedObject(flattenedList, context);
+        ExtractedObject result = flatten(accumulator, context);
+        return result;
     }
 
     private ExtractedObject extractedObject(Object object, Context context) {
@@ -164,7 +161,7 @@ public class ObjectReader {
         if (object == null && mode.isGet()) {
             return ExtractedObject.singleObject(null);
         } else if (object == null && mode.isList()) {
-            return ExtractedObject.objectList(Collections.emptyList(strategy));
+            return ExtractedObject.objectList(CollectionUtils.emptyList(strategy));
         }
 
         // if object is not list or if object is list and clazz is list
@@ -177,25 +174,48 @@ public class ObjectReader {
 
         // if object is list and requested GET mode, return the list as extracted object
         if (mode == Context.ExtractMode.GET) {
+            // if list size = 1 return the single object
+            if (list.size() == 1) {
+                return ExtractedObject.singleObject(list.get(0));
+            }
             return ExtractedObject.singleObject(list);
         }
 
         // return the extracted object as list
         if (list.isEmpty()) {
-            list = Collections.emptyList(strategy);
+            list = CollectionUtils.emptyList(strategy);
         }
         return ExtractedObject.objectList(list);
     }
 
     // static helper Record Class to encapsulate the extraction result and handle get vs. list mode
     private static record ExtractedObject(Object singleObject, List<Object> objectList) {
-        public static ExtractedObject singleObject(Object singleObject) {
+
+        static ExtractedObject singleObject(Object singleObject) {
             return new ExtractedObject(singleObject, null);
         }
 
-        public static ExtractedObject objectList(List<Object> objectList) {
+        static ExtractedObject objectList(List<Object> objectList) {
             return new ExtractedObject(null, objectList);
         }
+
+        // as list: if single object: list of single object else list
+        static List<Object> asList(ExtractedObject object) {
+            if (object.singleObject != null) {
+                return List.of(object.singleObject);
+            }
+            return object.objectList;
+        }
+
+    }
+
+    private ExtractedObject flatten(List<ExtractedObject> accumulator, Context ctx) {
+        // Flatten the list of lists
+        List<Object> objList = accumulator.stream()
+                .map(ExtractedObject::asList)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        return extractedObject(objList, ctx);
     }
 
 }

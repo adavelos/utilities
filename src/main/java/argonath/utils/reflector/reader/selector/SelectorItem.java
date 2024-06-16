@@ -1,10 +1,10 @@
 package argonath.utils.reflector.reader.selector;
 
 import argonath.utils.reflection.ReflectiveAccessor;
-import argonath.utils.reflector.reader.filter.Filter;
-import argonath.utils.reflector.reader.filter.Filters;
-import argonath.utils.reflector.reader.mapper.ValueMapper;
-import argonath.utils.reflector.reader.mapper.ValueMappers;
+import argonath.utils.reflector.reader.expression.Expression;
+import argonath.utils.reflector.reader.expression.ExpressionProcessor;
+import argonath.utils.reflector.reader.expression.Method;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * An element of the Selector that corresponds to rules to access the respective member part of the object graph.
@@ -24,22 +24,22 @@ public class SelectorItem {
     /**
      * The filter expression (within brackets to filter-out iterable type elements)
      */
-    private String filterExpression;
+    private String filterExpressionStr;
 
     /**
      * The filter resolved from the filterSelector (lazy loaded)
      */
-    private Filter filter;
+    private Expression filterExpression;
 
     /**
      * The expression that maps the extracted object value to a custom evaluated value
      */
-    private String valueMapperExpression;
+    private String valueMapperStr;
 
     /**
      * The Value Mapper resolved from the valueMapperExpression (lazy loaded)
      */
-    private ValueMapper valueMapper;
+    private Method valueMapper;
 
     /**
      * Next element in the XPath expression
@@ -56,10 +56,13 @@ public class SelectorItem {
     private void parse(String elementStr) {
         int start = elementStr.indexOf('[');
         int end = elementStr.lastIndexOf(']');
+        if ((start > -1 && end == -1) || (start == -1 && end > -1) || (start > -1 && end > -1 && end <= start)) {
+            throw new IllegalArgumentException("Invalid XPath element: " + elementStr + " (brackets are not balanced)");
+        }
         boolean hasInstanceSelectorExpr = start > -1 && end > -1;
         if (hasInstanceSelectorExpr) {
             // text within brackets = instance selection expression
-            filterExpression = elementStr.substring(start + 1, end - 1);
+            filterExpressionStr = elementStr.substring(start + 1, end);
         }
 
         // find the first instance of '@'
@@ -67,12 +70,12 @@ public class SelectorItem {
         boolean hasValueMapper = vmIndex > -1;
         if (hasValueMapper) {
             // text after '@' = value mapper expression
-            valueMapperExpression = elementStr.substring(vmIndex + 1);
+            valueMapperStr = elementStr.substring(vmIndex + 1);
         }
 
-        // text before '[' or '@' = name
+
         fieldName = hasValueMapper || hasInstanceSelectorExpr ?
-                elementStr.substring(0, Math.min(start, vmIndex)) :
+                elementStr.substring(0, minIndex(start, vmIndex)) :
                 elementStr;
 
         // Validations
@@ -81,29 +84,42 @@ public class SelectorItem {
         }
 
         // Value Mapper Expression must not be empty
-        if (hasValueMapper && valueMapperExpression.isEmpty()) {
+        if (hasValueMapper && valueMapperStr.isEmpty()) {
             throw new IllegalArgumentException("Invalid XPath element: " + elementStr + " (value mapper is empty)");
         }
 
         // Instance Selector Expression must not be empty
-        if (hasInstanceSelectorExpr && filterExpression.isEmpty()) {
+        if (hasInstanceSelectorExpr && filterExpressionStr.isEmpty()) {
             throw new IllegalArgumentException("Invalid XPath element: " + elementStr + " (instance selector is empty)");
         }
     }
 
-    public ValueMapper valueMapper() {
+    private int minIndex(int start, int vmIndex) {
+        if (start == -1) {
+            return vmIndex;
+        } else if (vmIndex == -1) {
+            return start;
+        } else {
+            return Math.min(start, vmIndex);
+        }
+    }
+
+    public Method valueMapper() {
         if (valueMapper != null) {
             return valueMapper;
         }
-        valueMapper = ValueMappers.of(valueMapperExpression);
+        if (StringUtils.isBlank(valueMapperStr)) {
+            return Method.identity();
+        }
+        valueMapper = ExpressionProcessor.parseMethod(valueMapperStr);
         return valueMapper;
     }
 
-    public Filter filter() {
-        if (filter == null) {
-            filter = Filters.of(filterExpression);
+    public Expression filter() {
+        if (filterExpression == null) {
+            filterExpression = ExpressionProcessor.parse(filterExpressionStr);
         }
-        return filter;
+        return filterExpression;
     }
 
     public SelectorItem next() {

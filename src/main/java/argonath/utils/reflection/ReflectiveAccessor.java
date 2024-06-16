@@ -53,6 +53,14 @@ public class ReflectiveAccessor {
         return value;
     }
 
+    public static Boolean isStandardMultiValueClass(Class<?> clazz) {
+        return isCollection(clazz) || isArray(clazz) || isMap(clazz);
+    }
+
+    public static Boolean isStandardMultiValueClass(Object obj) {
+        return isCollection(obj) || isArray(obj) || isMap(obj);
+    }
+
     public static Boolean isArrayOrCollection(Object obj) {
         Assert.notNull(obj, "Cannot determine Array/Collection from 'null' Object");
         return isArrayOrCollection(obj.getClass());
@@ -111,6 +119,10 @@ public class ReflectiveAccessor {
     public static boolean isSet(Class<?> clazz) {
         Assert.notNull(clazz, "Cannot determine Set from 'null' Class");
         return Set.class.isAssignableFrom(clazz);
+    }
+
+    public static <T> boolean isEnum(Class<T> clazz) {
+        return clazz.isEnum();
     }
 
     public static Class<?> getGenericType(Field field) {

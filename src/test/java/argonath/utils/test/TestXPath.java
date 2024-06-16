@@ -1,7 +1,6 @@
 package argonath.utils.test;
 
 
-import argonath.utils.reflector.reader.filter.Operator;
 import argonath.utils.reflector.reader.selector.Selector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -18,6 +18,8 @@ public class IterableTypes {
         ITERABLE_TYPES.put(Set.class, BuiltinIterableTypes.SET);
         ITERABLE_TYPES.put(Map.class, BuiltinIterableTypes.MAP);
 
+        // TODO: Sort the types by class hierarchy, so that the most specific types are checked first
+
     }
 
     // register iterable type
@@ -25,12 +27,26 @@ public class IterableTypes {
         ITERABLE_TYPES.put(clazz, iterableType);
     }
 
+    public static IterableType iterableType(Object object) {
+        return iterableType(object.getClass());
+    }
+
     public static IterableType iterableType(Class<?> clazz) {
-        return ITERABLE_TYPES.get(clazz);
+        for (Class<?> iterableType : ITERABLE_TYPES.keySet()) {
+            if (iterableType.isAssignableFrom(clazz)) {
+                return ITERABLE_TYPES.get(iterableType);
+            }
+        }
+        return null;
     }
 
     public static boolean isIterableType(Class<?> clazz) {
-        return ITERABLE_TYPES.containsKey(clazz);
+        for (Class<?> iterableType : ITERABLE_TYPES.keySet()) {
+            if (iterableType.isAssignableFrom(clazz)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isIterableType(Object object) {

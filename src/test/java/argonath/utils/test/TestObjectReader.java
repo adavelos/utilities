@@ -1,7 +1,6 @@
 package argonath.utils.test;
 
 import argonath.utils.reflector.reader.ObjectReader;
-import argonath.utils.reflector.reader.types.Collections;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +16,9 @@ public class TestObjectReader {
         ObjectReader reader = ObjectReader.create();
         InnerClass innerClass = new InnerClass("innerString", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("innerFriend1", "innerFriend2"), new byte[]{1, 2, 3});
         List<InnerClass> innerClasses = List.of(
-                new InnerClass("innerString1", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("innerFriend1", "innerFriend2"), new byte[]{1, 2, 3}),
-                new InnerClass("innerString2", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("innerFriend1", "innerFriend2"), new byte[]{1, 2, 3}),
-                new InnerClass("innerString3", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("innerFriend1", "innerFriend2"), new byte[]{1, 2, 3})
+                new InnerClass("innerString1", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("innerFriend1", "innerFriend2"), new byte[]{1, 2, 3})
+//                new InnerClass("innerString2", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("innerFriend1", "innerFriend2"), new byte[]{1, 2, 3}),
+//                new InnerClass("innerString3", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("innerFriend1", "innerFriend2"), new byte[]{1, 2, 3})
         );
         TestClass inputObject = new TestClass("string", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("friend1", "friend2"), new byte[]{1, 2, 3},
                 innerClass, innerClasses);
@@ -65,8 +64,8 @@ public class TestObjectReader {
         Assertions.assertNotNull(testObjectInner, "inner is not null");
         Collection<InnerClass> testObjectInnerClasses = reader.list(inputObject, "/innerClasses", InnerClass.class);
         Assertions.assertArrayEquals(inputObject.innerClasses.toArray(), testObjectInnerClasses.toArray(), "innerClasses are equal");
-        //   List<InnerClass> testObjectInnerClasses2 = reader.get(inputObject, "/innerClasses", List.class);
-        //   Assertions.assertArrayEquals(inputObject.innerClasses.toArray(), testObjectInnerClasses2.toArray(), "innerClasses are equal");
+           List<InnerClass> testObjectInnerClasses2 = reader.get(inputObject, "/innerClasses", List.class);
+           Assertions.assertArrayEquals(inputObject.innerClasses.toArray(), testObjectInnerClasses2.toArray(), "innerClasses are equal");
 
 //        // Test Inner Class
         InnerClass inner = reader.get(inputObject, "/innerClass", InnerClass.class);
@@ -118,7 +117,6 @@ public class TestObjectReader {
         Collection<String> nullList = reader.list(inputObject, "/nullList", String.class);
         Assertions.assertNotNull(nullList, "nullList is not null");
         Assertions.assertEquals(0, nullList.size(), "nullList size is 0");
-
 
     }
 

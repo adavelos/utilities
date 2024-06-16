@@ -87,6 +87,9 @@ public class TestReflectionAccessor {
         List<TestClass> extendedList = List.of(new TestClass(), new TestClass());
         Assertions.assertTrue(ReflectiveAccessor.isListOfCompatibleType(extendedList, ExtendedClass.class), "List<TestClass> is compatible with ExtendedClass");
 
+        // test isEnum
+        Assertions.assertTrue(ReflectiveAccessor.isEnum(TestEnum.class), "TestEnum");
+
     }
 
     public static class TestClass {
@@ -100,5 +103,9 @@ public class TestReflectionAccessor {
     }
 
     public static class ExtendedClass extends TestClass {
+    }
+
+    public static enum TestEnum {
+        A, B, C
     }
 }
