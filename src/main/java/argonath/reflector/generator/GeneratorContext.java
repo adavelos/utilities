@@ -9,9 +9,7 @@ import argonath.utils.XPathUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -27,13 +25,10 @@ public class GeneratorContext {
 
     private Long seed = null;
 
-    private Map<String, Sequence> sequenceMap;
-
     GeneratorContext(Class<?> returnClass, GeneratorConfig config) {
         this.returnClass = returnClass;
         this.config = config;
         this.elements = new Stack<>();
-        this.sequenceMap = new HashMap<>();
     }
 
     GeneratorConfig config() {
@@ -63,7 +58,7 @@ public class GeneratorContext {
         ObjectSpecs<?> specs = this.config.specs(curElement, this);
         Generator<?> generator = (specs == null) ? null : specs.generator();
         if (generator == null) {
-            generator = GeneratorRegistry.generator(curElement.typeClass(), path());
+            generator = DefaultGeneratorRegistry.generator(curElement.typeClass());
         }
         return generator;
     }
@@ -122,15 +117,6 @@ public class GeneratorContext {
 
     Long seed() {
         return this.seed;
-    }
-
-    public Sequence sequence(String path) {
-        return sequenceMap.compute(path, (key, existingSeq) -> {
-            if (existingSeq == null) {
-                return new Sequence();
-            }
-            return existingSeq;
-        });
     }
 
     static class Element {

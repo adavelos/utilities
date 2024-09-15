@@ -55,6 +55,10 @@ public class TextGenerator {
             sb.append(" ");
         }
 
+        if (sb.length() > length) {
+            sb.delete(length, sb.length());
+        }
+
         return sb.toString();
     }
 

@@ -8,6 +8,7 @@ import argonath.reflector.reflection.ReflectiveMutator;
 import argonath.reflector.reflection.TypeExplorer;
 import argonath.reflector.types.iterable.IterableType;
 import argonath.reflector.types.iterable.IterableTypes;
+import argonath.utils.Assert;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -98,6 +99,7 @@ public class ObjectGenerator {
             return null;
         }
 
+        Assert.notNull(generator.type(), "Generator type cannot be null: " + generator.getClass());
         if (IterableTypes.isIterableType(element.typeClass()) && !IterableTypes.isIterableType(generator.type())) {
             // specs for an iterable field: generator returns a single object, so ignore the current level
             return null;
@@ -105,25 +107,13 @@ public class ObjectGenerator {
 
         T ret = null;
         try {
-            if (generator instanceof SequenceGenerator sequenceGenerator) {
-                ret = invokeSequenceGenerator(sequenceGenerator, ctx);
-            } else {
-                ret = generator.generate(ctx.config().seed());
-            }
+            ret = generator.generate(ctx.config().seed());
         } catch (IllegalArgumentException e) {
             if (!ctx.config().isLenient()) {
                 throw e;
             }
         }
         return ret;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T invokeSequenceGenerator(SequenceGenerator generator, GeneratorContext ctx) {
-        String path = ctx.path();
-        String key = generator.key() != null ? generator.key() : path;
-        Sequence sequence = ctx.sequence(key);
-        return (T) generator.generate(ctx.seed(), sequence.next());
     }
 
     private static <T> T instantiateObject(Class<T> clazz, GeneratorContext ctx) {
@@ -206,6 +196,11 @@ public class ObjectGenerator {
 
         public Builder<T> withSpecs(FieldSelector selector, ObjectSpecs<?> generator) {
             this.config.withSpecs(selector, generator);
+            return this;
+        }
+
+        public Builder<T> withSpecsFile(String filename) {
+            this.config.withSpecsFile(filename);
             return this;
         }
 

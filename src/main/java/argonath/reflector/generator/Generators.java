@@ -2,10 +2,13 @@ package argonath.reflector.generator;
 
 import argonath.random.*;
 import argonath.reflector.generator.model.Generator;
+import argonath.reflector.reflection.ReflectiveAccessor;
+import argonath.utils.Assert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 public class Generators {
@@ -73,8 +76,17 @@ public class Generators {
         return create(byte[].class, (seed, args) -> RandomIterable.randomByteArray(minSize, maxSize));
     }
 
+
+    public static Generator<Boolean> randomBoolean() {
+        return create(Boolean.class, (seed, args) -> RandomNumber.flipCoin());
+    }
+
     public static Generator<LocalDateTime> now() {
         return create(LocalDateTime.class, (seed, args) -> LocalDateTime.now());
+    }
+
+    public static Generator<LocalDate> today() {
+        return create(LocalDate.class, (seed, args) -> LocalDate.now());
     }
 
     public static Generator<String> loremIpsum(int length) {
@@ -85,16 +97,29 @@ public class Generators {
         return create(String.class, (seed, args) -> TextGenerator.loremIpsum(minLength, maxLength));
     }
 
+    /**
+     * Generate a sequence of integers starting from the given start value and incrementing by the given step.
+     * The sequence is common for all generated elements at the same path of the object graph (regardless the field selection method)
+     */
     public static Generator<Integer> sequence(int start, int step) {
-        return new SequenceGenerator(start, step, null);
+        return new SequenceGenerator(start, step);
     }
 
-    public static Generator<Integer> sequence(int start, int step, String key) {
-        return new SequenceGenerator(start, step, key);
+
+
+    public static <T> Generator<T> valueSelector(boolean withReplacement, Set<T> values) {
+        Assert.notNull(values, "Values set cannot be null");
+        Class<T> clazz = ReflectiveAccessor.getClassFromCollectionTyped(values);
+        return new ValueGenerator<>(clazz, withReplacement, values);
     }
 
-    public static Generator<Boolean> randomBoolean() {
-        return create(Boolean.class, (seed, args) -> RandomNumber.flipCoin());
+    public static <T> Generator<T> valueSelector(boolean withReplacement, T... values) {
+        return valueSelector(withReplacement, Set.of(values));
+    }
+
+    // enum values
+    public static <T extends Enum<T>> Generator<T> enumValueSelector(Class<T> enumClass, boolean withReplacement) {
+        return new EnumValueGenerator<>(enumClass, withReplacement);
     }
 
     private static <T> Generator<T> create(Class<T> clazz, BiFunction<Long, Object[], T> generator) {

@@ -1,26 +1,26 @@
 package argonath.reflector.generator;
 
 import argonath.reflector.generator.model.Generator;
-import argonath.utils.Assert;
 
 public class SequenceGenerator implements Generator<Integer> {
 
-    private int start;
     private int step;
-    private String key;
 
-    public SequenceGenerator(int start, int step, String key) {
-        this.start = start;
+    private int current;
+
+    public SequenceGenerator(int start, int step) {
         this.step = step;
-        this.key = key;
+        this.current = start;
     }
 
     @Override
     public Integer generate(Long seed, Object... args) {
-        Assert.isTrue(args.length == 1, "SequenceGenerator requires exactly one argument");
-        Assert.isTrue(args[0] instanceof Number, "SequenceGenerator requires a number as argument");
-        int index = ((Number) args[0]).intValue();
-        return start + index * step;
+        int result = current;
+        current += step;
+        if (current < 0) { // overflow
+            current = 0;
+        }
+        return result;
     }
 
     @Override
@@ -28,7 +28,4 @@ public class SequenceGenerator implements Generator<Integer> {
         return Integer.class;
     }
 
-    public String key() {
-        return key;
-    }
 }

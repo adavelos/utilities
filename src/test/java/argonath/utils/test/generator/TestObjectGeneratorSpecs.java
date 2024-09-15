@@ -14,7 +14,7 @@ import static argonath.reflector.generator.Generators.randomInt;
 import static argonath.reflector.generator.Generators.randomString;
 import static argonath.reflector.generator.model.ObjectSpecs.generator;
 
-public class TestObjectGeneratorApi {
+public class TestObjectGeneratorSpecs {
     /*
         - Selectors variances
         - with Specs

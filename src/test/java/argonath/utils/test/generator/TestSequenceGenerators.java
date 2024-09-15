@@ -3,6 +3,7 @@ package argonath.utils.test.generator;
 import argonath.reflector.generator.FieldSelector;
 import argonath.reflector.generator.Generators;
 import argonath.reflector.generator.ObjectGenerator;
+import argonath.reflector.generator.model.Generator;
 import argonath.reflector.generator.model.ObjectSpecs;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,14 +16,16 @@ public class TestSequenceGenerators {
         // register local generator at: /a and at /innerClass/a
         // register global generator "key1" at /b and at /innerClass/b
 
+        Generator<Integer> gen1 = Generators.sequence(1, 1);
+        Generator<Integer> gen2 = Generators.sequence(1, 1);
         TestClass obj = ObjectGenerator.create(TestClass.class)
-                .withSpecs(FieldSelector.ofPath("/a"), ObjectSpecs.generator(Integer.class, Generators.sequence(1, 1, "key1")))
-                .withSpecs(FieldSelector.ofPath("/inner/a"), ObjectSpecs.generator(Integer.class, Generators.sequence(1, 1, "key1")))
+                .withSpecs(FieldSelector.ofPath("/a"), ObjectSpecs.generator(Integer.class, gen1))
+                .withSpecs(FieldSelector.ofPath("/inner/a"), ObjectSpecs.generator(Integer.class, gen1))
                 .withSpecs(FieldSelector.ofPath("/b"), ObjectSpecs.generator(Integer.class, Generators.sequence(1, 1)))
                 .withSpecs(FieldSelector.ofPath("/inner/b"), ObjectSpecs.generator(Integer.class, Generators.sequence(1, 1)))
 
-                .withSpecs(FieldSelector.ofPath("/intArray"), ObjectSpecs.generator(Integer.class, Generators.sequence(1, 1, "key2")).size(5, 10))
-                .withSpecs(FieldSelector.ofPath("/inner/intArray"), ObjectSpecs.generator(Integer.class, Generators.sequence(1, 1, "key2")).size(5, 10))
+                .withSpecs(FieldSelector.ofPath("/intArray"), ObjectSpecs.generator(Integer.class, gen2).size(5, 10))
+                .withSpecs(FieldSelector.ofPath("/inner/intArray"), ObjectSpecs.generator(Integer.class, gen2).size(5, 10))
 
                 .withSpecs(FieldSelector.ofPath("/integerArray"), ObjectSpecs.generator(Integer.class, Generators.sequence(1, 1)).size(5, 10))
                 .withSpecs(FieldSelector.ofPath("/inner/integerArray"), ObjectSpecs.generator(Integer.class, Generators.sequence(1, 1)).size(5, 10))
@@ -66,13 +69,15 @@ public class TestSequenceGenerators {
 
     @Test
     public void testSequenceGeneratorsWithDifferentStartsAndSteps() {
+        Generator<Integer> gen1 = Generators.sequence(10, 5);
+        Generator<Integer> gen2 = Generators.sequence(1000, 100);
         TestClass obj = ObjectGenerator.create(TestClass.class)
-                .withSpecs(FieldSelector.ofPath("/a"), ObjectSpecs.generator(Integer.class, Generators.sequence(10, 5, "key1")))
-                .withSpecs(FieldSelector.ofPath("/inner/a"), ObjectSpecs.generator(Integer.class, Generators.sequence(10, 5, "key1")))
+                .withSpecs(FieldSelector.ofPath("/a"), ObjectSpecs.generator(Integer.class, gen1))
+                .withSpecs(FieldSelector.ofPath("/inner/a"), ObjectSpecs.generator(Integer.class, gen1))
                 .withSpecs(FieldSelector.ofPath("/b"), ObjectSpecs.generator(Integer.class, Generators.sequence(100, 10)))
                 .withSpecs(FieldSelector.ofPath("/inner/b"), ObjectSpecs.generator(Integer.class, Generators.sequence(100, 10)))
-                .withSpecs(FieldSelector.ofPath("/intArray"), ObjectSpecs.generator(Integer.class, Generators.sequence(1000, 100, "key2")).size(3, 5))
-                .withSpecs(FieldSelector.ofPath("/inner/intArray"), ObjectSpecs.generator(Integer.class, Generators.sequence(1000, 100, "key2")).size(3, 5))
+                .withSpecs(FieldSelector.ofPath("/intArray"), ObjectSpecs.generator(Integer.class, gen2).size(3, 5))
+                .withSpecs(FieldSelector.ofPath("/inner/intArray"), ObjectSpecs.generator(Integer.class, gen2).size(3, 5))
                 .withSpecs(FieldSelector.ofPath("/integerArray"), ObjectSpecs.generator(Integer.class, Generators.sequence(50, 2)).size(3, 5))
                 .withSpecs(FieldSelector.ofPath("/inner/integerArray"), ObjectSpecs.generator(Integer.class, Generators.sequence(50, 2)).size(3, 5))
                 .generate();

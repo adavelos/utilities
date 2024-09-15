@@ -154,10 +154,10 @@ public class ReflectiveAccessor {
     public static Class<?> getGenericType(Field field) {
         Assert.notNull(field, "Field is 'null'");
         Type genericType = field.getGenericType();
-        return getGenericType(genericType);
+        return getClassFromCollection(genericType);
     }
 
-    public static Class<?> getGenericType(Type type) {
+    public static Class<?> getClassFromCollection(Type type) {
         Assert.notNull(type, "Type is 'null'");
         Class<?> ret = null;
         if (type instanceof ParameterizedType paramType) {
@@ -171,12 +171,17 @@ public class ReflectiveAccessor {
         return ret;
     }
 
-    public static Class<?> getGenericType(Collection<?> collection) {
+    public static Class<?> getClassFromCollection(Collection<?> collection) {
         Assert.notNull(collection, "Collection is 'null'");
         if (collection.isEmpty()) {
             return Object.class;
         }
         return collection.iterator().next().getClass();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> getClassFromCollectionTyped(Collection<T> collection) {
+        return (Class<T>) getClassFromCollection(collection);
     }
 
     public static Class<?> getGenericOrArrayType(Field field) {

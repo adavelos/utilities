@@ -54,7 +54,7 @@ public class TestTextGenerator {
     void testLoremIpsumLongLength() {
         int length = 10000;
         String result = TextGenerator.loremIpsum(length);
-        assertTrue(result.length() >= length, "Long length should be respected or slightly exceeded");
+        assertTrue(result.length() == length, "Long length should be respected");
     }
 
     @Test

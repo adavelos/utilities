@@ -17,7 +17,7 @@ public enum GeneratorStrategy {
                     return true;
                 case OPTIONAL:
                     return RandomNumber.flipCoin();
-                case NONE:
+                case NEVER:
                     return false;
             }
             throw new IllegalStateException("Unknown optionality: " + optionality);

@@ -12,7 +12,7 @@ public class ObjectSpecs<T> {
         this.cardinality = Cardinality.DEFAULT;
     }
 
-    private ObjectSpecs(Generator<?> generator, Optionality optional, Cardinality cardinality) {
+    ObjectSpecs(Generator<?> generator, Optionality optional, Cardinality cardinality) {
         this.generator = (Generator<T>) generator;
         this.optionality = optional;
         this.cardinality = cardinality;
@@ -56,6 +56,11 @@ public class ObjectSpecs<T> {
         return this;
     }
 
+    public ObjectSpecs<T> size(int exactSize) {
+        this.cardinality = new Cardinality(exactSize, exactSize);
+        return this;
+    }
+
     public ObjectSpecs<T> mandatory() {
         this.optionality = Optionality.MANDATORY;
         return this;
@@ -67,7 +72,7 @@ public class ObjectSpecs<T> {
     }
 
     public ObjectSpecs<T> ignore() {
-        this.optionality = Optionality.NONE;
+        this.optionality = Optionality.NEVER;
         return this;
     }
 

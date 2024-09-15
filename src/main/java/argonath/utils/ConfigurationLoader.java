@@ -27,9 +27,10 @@ public class ConfigurationLoader {
             }
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException("Error loading configuration file: " + filename, ex);
         }
 
         return configMap;
     }
+
 }

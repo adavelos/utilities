@@ -88,7 +88,7 @@ class BuiltInIterableTypes {
 
         @Override
         public Object fromCollection(Collection<?> collection, Class<?> clazz) {
-            Class<?> elementType = ReflectiveAccessor.getGenericType(collection);
+            Class<?> elementType = ReflectiveAccessor.getClassFromCollection(collection);
             if (!Map.Entry.class.isAssignableFrom(elementType)) {
                 // Value Mapper has been applied, therefore Map cannot be reconstructed. Return list of extracted values
                 // instead (key or value, depending on the value mapper applied)

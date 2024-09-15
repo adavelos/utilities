@@ -44,7 +44,7 @@ public class Cardinality {
         if (distribution != null) {
             return distribution.generate(null);
         }
-        return RandomNumber.getInteger(minSize, maxSize);
+        return RandomNumber.getInteger(minSize, maxSize + 1);
     }
 
 }
