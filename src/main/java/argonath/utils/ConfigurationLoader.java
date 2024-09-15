@@ -21,7 +21,6 @@ public class ConfigurationLoader {
             // Load properties from the input stream
             prop.load(input);
 
-            // Transfer properties to HashMap
             for (String key : prop.stringPropertyNames()) {
                 configMap.put(key, prop.getProperty(key));
             }

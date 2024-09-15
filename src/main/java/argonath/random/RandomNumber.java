@@ -44,7 +44,7 @@ public class RandomNumber {
     }
 
     public static Float getFloat(Float origin, Float bound) {
-        Float r = ThreadLocalRandom.current().nextFloat();
+        Float r = ThreadLocalRandom.current().nextFloat(origin, bound);
         return r;
     }
 

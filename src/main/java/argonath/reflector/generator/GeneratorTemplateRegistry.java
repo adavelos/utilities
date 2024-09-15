@@ -1,7 +1,7 @@
 package argonath.reflector.generator;
 
 import argonath.reflector.generator.model.GeneratorTemplate;
-import argonath.utils.Assert;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,50 +25,211 @@ public class GeneratorTemplateRegistry {
     }
 
     private static void registerBuiltinGenerators() {
-        // String
-        generatorRegistry.put("randomString", (args) -> randomString(parseString(args, 0, "randomString")));
+        generatorRegistry.put("randomString", randomStringTemplate());
+        generatorRegistry.put("randomInt", randomIntTemplate());
+        generatorRegistry.put("randomShort", randomShortTemplate());
+        generatorRegistry.put("randomByte", randomByteTemplate());
+        generatorRegistry.put("randomChar", randomCharTemplate());
+        generatorRegistry.put("randomLong", randomLongTemplate());
+        generatorRegistry.put("randomDouble", randomDoubleTemplate());
+        generatorRegistry.put("randomFloat", randomFloatTemplate());
+        generatorRegistry.put("randomBigInteger", randomBigIntegerTemplate());
+        generatorRegistry.put("randomBigDecimal", randomBigDecimalTemplate());
+        generatorRegistry.put("randomBoolean", randomBooleanTemplate());
+        generatorRegistry.put("randomLocalDate", randomLocalDateTemplate());
+        generatorRegistry.put("randomLocalDateTime", randomLocalDateTimeTemplate());
+        generatorRegistry.put("randomOffsetDateTime", randomOffsetDateTimeTemplate());
+        generatorRegistry.put("randomOffsetTime", randomOffsetTimeTemplate());
+        generatorRegistry.put("randomZonedDateTime", randomZonedDateTimeTemplate());
+        generatorRegistry.put("randomByteArray", randomByteArrayTemplate());
+        generatorRegistry.put("now", nowTemplate());
+        generatorRegistry.put("today", todayTemplate());
+        generatorRegistry.put("loremIpsum", loremIpsumTemplate());
+        generatorRegistry.put("sequence", sequenceTemplate());
+        generatorRegistry.put("valueSelector", valueSelectorTemplate());
+        generatorRegistry.put("enumSelector", enumSelectorTemplate());
+    }
 
-        // Number
-        generatorRegistry.put("randomInt", (args) -> randomInt(parseInt(args, 0, "randomInt"), parseInt(args, 1, "randomInt")));
-        generatorRegistry.put("randomShort", (args) -> randomShort(parseShort(args, 0, "randomShort"), parseShort(args, 1, "randomShort")));
-        generatorRegistry.put("randomByte", (args) -> randomByte(parseByte(args, 0, "randomByte"), parseByte(args, 1, "randomByte")));
-        generatorRegistry.put("randomCharacter", (args) -> randomCharacter(parseChar(args, 0, "randomCharacter"), parseChar(args, 1, "randomCharacter")));
-        generatorRegistry.put("randomLong", (args) -> randomLong(parseLong(args, 0, "randomLong"), parseLong(args, 1, "randomLong")));
-        generatorRegistry.put("randomDouble", (args) -> randomDouble(parseDouble(args, 0, "randomDouble"), parseDouble(args, 1, "randomDouble")));
-        generatorRegistry.put("randomFloat", (args) -> randomFloat(parseFloat(args, 0, "randomFloat"), parseFloat(args, 1, "randomFloat")));
+    private static GeneratorTemplate randomStringTemplate() {
+        return (args) -> {
+            String randomString = parseString(args, 0, "randomString");
+            return randomString(randomString);
+        };
+    }
 
-        // Boolean
-        generatorRegistry.put("randomBoolean", (args) -> randomBoolean());
+    private static GeneratorTemplate randomIntTemplate() {
+        return (args) -> {
+            Pair<Integer, Integer> range = parseIntRange(args, "randomInt");
+            return randomInt(range.getLeft(), range.getRight());
+        };
+    }
 
-        // Dates
-        generatorRegistry.put("randomLocalDate", (args) -> randomLocalDate(parseInt(args, 0, "randomLocalDate"), parseInt(args, 1, "randomLocalDate")));
-        generatorRegistry.put("randomLocalDateTime", (args) -> randomLocalDateTime(parseInt(args, 0, "randomLocalDateTime"), parseInt(args, 1, "randomLocalDateTime")));
-        generatorRegistry.put("randomOffsetDateTime", (args) -> randomOffsetDateTime(parseInt(args, 0, "randomOffsetDateTime"), parseInt(args, 1, "randomOffsetDateTime")));
-        generatorRegistry.put("randomOffsetTime", (args) -> randomOffsetTime(parseInt(args, 0, "randomOffsetTime"), parseInt(args, 1, "randomOffsetTime")));
-        generatorRegistry.put("randomZonedDateTime", (args) -> randomZonedDateTime(parseInt(args, 0, "randomZonedDateTime"), parseInt(args, 1, "randomZonedDateTime")));
+    private static GeneratorTemplate randomShortTemplate() {
+        return (args) -> {
+            Pair<Short, Short> range = parseShortRange(args, "randomShort");
+            return randomShort(range.getLeft(), range.getRight());
+        };
+    }
 
-        generatorRegistry.put("randomByte", (args) -> randomByteArray(parseInt(args, 0, "randomByteArray"), parseInt(args, 1, "randomByteArray")));
+    private static GeneratorTemplate randomByteTemplate() {
+        return (args) -> {
+            Pair<Byte, Byte> range = parseByteRange(args, "randomByte");
+            return randomByte(range.getLeft(), range.getRight());
+        };
+    }
 
-        generatorRegistry.put("now", (args) -> now());
-        generatorRegistry.put("today", (args) -> today());
-        generatorRegistry.put("loremIpsum", (args) -> {
+    private static GeneratorTemplate randomCharTemplate() {
+        return (args) -> {
+            Pair<Character, Character> range = parseCharRange(args, "randomChar");
+            return randomCharacter(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomLongTemplate() {
+        return (args) -> {
+            Pair<Long, Long> range = parseLongRange(args, "randomLong");
+            return randomLong(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomDoubleTemplate() {
+        return (args) -> {
+            Pair<Double, Double> range = parseDoubleRange(args, "randomDouble");
+            return randomDouble(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomFloatTemplate() {
+        return (args) -> {
+            Pair<Float, Float> range = parseFloatRange(args, "randomFloat");
+            return randomFloat(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomBigIntegerTemplate() {
+        return (args) -> {
+            Pair<Long, Long> range = parseLongRange(args, "randomBigInteger");
+            return randomBigInteger(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomBigDecimalTemplate() {
+        return (args) -> {
+            Pair<Double, Double> range = parseDoubleRange(args, "randomBigDecimal");
+            return randomBigDecimal(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomBooleanTemplate() {
+        return (args) -> randomBoolean();
+    }
+
+    private static GeneratorTemplate randomLocalDateTemplate() {
+        return (args) -> {
+            Pair<Integer, Integer> range = parseIntRange(args, "randomLocalDate");
+            return randomLocalDate(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomLocalDateTimeTemplate() {
+        return (args) -> {
+            Pair<Integer, Integer> range = parseIntRange(args, "randomLocalDateTime");
+            return randomLocalDateTime(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomOffsetDateTimeTemplate() {
+        return (args) -> {
+            Pair<Integer, Integer> range = parseIntRange(args, "randomOffsetDateTime");
+            return randomOffsetDateTime(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomOffsetTimeTemplate() {
+        return (args) -> {
+            Pair<Integer, Integer> range = parseIntRange(args, "randomOffsetTime");
+            return randomOffsetTime(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomZonedDateTimeTemplate() {
+        return (args) -> {
+            Pair<Integer, Integer> range = parseIntRange(args, "randomZonedDateTime");
+            return randomZonedDateTime(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate randomByteArrayTemplate() {
+        return (args) -> {
+            Pair<Integer, Integer> range = parseIntRange(args, "randomByteArray");
+            return randomByteArray(range.getLeft(), range.getRight());
+        };
+    }
+
+    private static GeneratorTemplate nowTemplate() {
+        return (args) -> now();
+    }
+
+    private static GeneratorTemplate todayTemplate() {
+        return (args) -> today();
+    }
+
+    private static GeneratorTemplate loremIpsumTemplate() {
+        return (args) -> {
             int minSize = parseInt(args, 0, "loremIpsum");
             if (args.length == 1) {
                 return loremIpsum(minSize);
             }
             int maxSize = parseInt(args, 1, "loremIpsum");
             return loremIpsum(minSize, maxSize);
-        });
-        generatorRegistry.put("sequence", (args) -> sequence(parseInt(args, 0, "sequence"), parseInt(args, 1, "sequence")));
-        generatorRegistry.put("valueSelector", (args) -> valueSelector(parseBoolean(args, 0, "valueSelector"), parseVarargs(args, 1)));
-        generatorRegistry.put("enumSelector", (args) -> enumValueSelector(parseEnum(args, 0, "enumSelector"), parseBoolean(args, 1, "enumSelector")));
+        };
     }
+
+    private static GeneratorTemplate sequenceTemplate() {
+        return (args) -> {
+            int start = parseInt(args, 0, "sequence");
+            int step = parseInt(args, 1, "sequence");
+            return sequence(start, step);
+        };
+    }
+
+    private static GeneratorTemplate valueSelectorTemplate() {
+        return (args) -> {
+            boolean allowDuplicates = parseBoolean(args, 0, "valueSelector");
+            String[] values = parseVarargs(args, 1);
+            return valueSelector(allowDuplicates, values);
+        };
+    }
+
+    private static GeneratorTemplate enumSelectorTemplate() {
+        return (args) -> {
+            Class<? extends Enum> enumClass = parseEnum(args, 0, "enumSelector");
+            boolean allowDuplicates = parseBoolean(args, 1, "enumSelector");
+            return enumValueSelector(enumClass, allowDuplicates);
+        };
+    }
+
 
     private static String parseString(String[] args, int index, String generatorName) {
         if (args.length <= index) {
             throw new IllegalArgumentException("Generator " + generatorName + " requires at least " + (index + 1) + " arguments");
         }
-        return args[index];
+        return args[index].trim();
+    }
+
+    private static Pair<Integer, Integer> parseIntRange(String[] args, String generatorName) {
+        if (args.length == 0) {
+            return Pair.of(Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
+        int firstArg = parseInt(args, 0, generatorName);
+        if (args.length == 1) {
+            return Pair.of(0, firstArg);
+        }
+        int secondArg = parseInt(args, 1, generatorName);
+        if (args.length == 2) {
+            return Pair.of(firstArg, secondArg);
+        }
+        throw new IllegalArgumentException("Generator " + generatorName + " requires at most 2 arguments");
     }
 
     private static int parseInt(String[] args, int index, String generatorName) {
@@ -82,6 +243,21 @@ public class GeneratorTemplateRegistry {
         }
     }
 
+    private static Pair<Short, Short> parseShortRange(String[] args, String generatorName) {
+        if (args.length == 0) {
+            return Pair.of(Short.MIN_VALUE, Short.MAX_VALUE);
+        }
+        short firstArg = parseShort(args, 0, generatorName);
+        if (args.length == 1) {
+            return Pair.of((short) 0, firstArg);
+        }
+        short secondArg = parseShort(args, 1, generatorName);
+        if (args.length == 2) {
+            return Pair.of(firstArg, secondArg);
+        }
+        throw new IllegalArgumentException("Generator " + generatorName + " requires at most 2 arguments");
+    }
+
     private static short parseShort(String[] args, int index, String generatorName) {
         String strVal = parseString(args, index, generatorName);
 
@@ -92,9 +268,24 @@ public class GeneratorTemplateRegistry {
         }
     }
 
+    // parseByteRange
+    private static Pair<Byte, Byte> parseByteRange(String[] args, String generatorName) {
+        if (args.length == 0) {
+            return Pair.of(Byte.MIN_VALUE, Byte.MAX_VALUE);
+        }
+        byte firstArg = parseByte(args, 0, generatorName);
+        if (args.length == 1) {
+            return Pair.of((byte) 0, firstArg);
+        }
+        byte secondArg = parseByte(args, 1, generatorName);
+        if (args.length == 2) {
+            return Pair.of(firstArg, secondArg);
+        }
+        throw new IllegalArgumentException("Generator " + generatorName + " requires at most 2 arguments");
+    }
+
     private static byte parseByte(String[] args, int index, String generatorName) {
         String strVal = parseString(args, index, generatorName);
-
         try {
             return Byte.parseByte(strVal);
         } catch (NumberFormatException e) {
@@ -102,10 +293,42 @@ public class GeneratorTemplateRegistry {
         }
     }
 
+    private static Pair<Character, Character> parseCharRange(String[] args, String generatorName) {
+        if (args.length == 0) {
+            return Pair.of('A', 'z');
+        }
+        char firstArg = parseChar(args, 0, generatorName);
+        if (args.length == 1) {
+            return Pair.of('a', firstArg);
+        }
+        char secondArg = parseChar(args, 1, generatorName);
+        if (args.length == 2) {
+            return Pair.of(firstArg, secondArg);
+        }
+        throw new IllegalArgumentException("Generator " + generatorName + " requires at most 2 arguments");
+    }
+
     private static char parseChar(String[] args, int index, String generatorName) {
         String strVal = parseString(args, index, generatorName);
-        Assert.isTrue(strVal.length() == 1, "Generator " + generatorName + " requires a single character argument at position " + (index + 1) + " but got: " + strVal);
+        if (strVal.length() != 1) {
+            throw new IllegalArgumentException("Generator " + generatorName + " requires a char argument at position " + (index + 1));
+        }
         return strVal.charAt(0);
+    }
+
+    private static Pair<Long, Long> parseLongRange(String[] args, String generatorName) {
+        if (args.length == 0) {
+            return Pair.of(Long.MIN_VALUE, Long.MAX_VALUE);
+        }
+        long firstArg = parseLong(args, 0, generatorName);
+        if (args.length == 1) {
+            return Pair.of(0L, firstArg);
+        }
+        long secondArg = parseLong(args, 1, generatorName);
+        if (args.length == 2) {
+            return Pair.of(firstArg, secondArg);
+        }
+        throw new IllegalArgumentException("Generator " + generatorName + " requires at most 2 arguments");
     }
 
     private static long parseLong(String[] args, int index, String generatorName) {
@@ -118,6 +341,21 @@ public class GeneratorTemplateRegistry {
         }
     }
 
+    private static Pair<Double, Double> parseDoubleRange(String[] args, String generatorName) {
+        if (args.length == 0) {
+            return Pair.of(Double.MIN_VALUE, Double.MAX_VALUE);
+        }
+        double firstArg = parseDouble(args, 0, generatorName);
+        if (args.length == 1) {
+            return Pair.of(0.0, firstArg);
+        }
+        double secondArg = parseDouble(args, 1, generatorName);
+        if (args.length == 2) {
+            return Pair.of(firstArg, secondArg);
+        }
+        throw new IllegalArgumentException("Generator " + generatorName + " requires at most 2 arguments");
+    }
+
     private static double parseDouble(String[] args, int index, String generatorName) {
         String strVal = parseString(args, index, generatorName);
 
@@ -126,6 +364,21 @@ public class GeneratorTemplateRegistry {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Generator " + generatorName + " requires a double argument at position " + (index + 1));
         }
+    }
+
+    private static Pair<Float, Float> parseFloatRange(String[] args, String generatorName) {
+        if (args.length == 0) {
+            return Pair.of(Float.MIN_VALUE, Float.MAX_VALUE);
+        }
+        float firstArg = parseFloat(args, 0, generatorName);
+        if (args.length == 1) {
+            return Pair.of(0.0f, firstArg);
+        }
+        float secondArg = parseFloat(args, 1, generatorName);
+        if (args.length == 2) {
+            return Pair.of(firstArg, secondArg);
+        }
+        throw new IllegalArgumentException("Generator " + generatorName + " requires at most 2 arguments");
     }
 
     private static float parseFloat(String[] args, int index, String generatorName) {

@@ -24,15 +24,15 @@ public class FieldSelector {
         return new FieldSelector(null, type, Type.TYPE);
     }
 
-    public static FieldSelector ofPath(String expression) {
-        return new FieldSelector(expression, null, Type.PATH);
+    public static FieldSelector ofPath(String path) {
+        return new FieldSelector(path, null, Type.PATH);
     }
 
-    public static FieldSelector ofFieldName(String expression) {
-        if (WcMatcher.isWildcard(expression)) {
-            return new FieldSelector(expression, null, Type.FIELD_NAME_WC);
+    public static FieldSelector ofFieldName(String fieldName) {
+        if (WcMatcher.isWildcard(fieldName)) {
+            return new FieldSelector(fieldName, null, Type.FIELD_NAME_WC);
         }
-        return new FieldSelector(expression, null, Type.FIELD_NAME);
+        return new FieldSelector(fieldName, null, Type.FIELD_NAME);
     }
 
     public Type type() {
@@ -47,7 +47,7 @@ public class FieldSelector {
         return clazz;
     }
 
-public boolean isPath() {
+    public boolean isPath() {
         return type == Type.PATH;
     }
 }

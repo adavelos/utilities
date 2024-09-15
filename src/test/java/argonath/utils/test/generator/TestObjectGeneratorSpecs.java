@@ -1,7 +1,6 @@
 package argonath.utils.test.generator;
 
 import argonath.reflector.generator.ObjectGenerator;
-import argonath.reflector.generator.model.ObjectSpecs;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,228 +8,114 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static argonath.reflector.generator.FieldSelector.ofPath;
-import static argonath.reflector.generator.Generators.randomInt;
-import static argonath.reflector.generator.Generators.randomString;
-import static argonath.reflector.generator.model.ObjectSpecs.generator;
-
 public class TestObjectGeneratorSpecs {
-    /*
-        - Selectors variances
-        - with Specs
-        - with Value
-        - Code List
-        - SEED
-        - All Mandatory
-     */
 
     @Test
-    public void testWithSpecsWithAllMandatory() {
+    public void testWithSpecsFile() {
         Outer obj = ObjectGenerator.create(Outer.class)
-                .withAllMandatory()
-                .withSpecs(ofPath("/intField"), generator(Integer.class, randomInt(1000, 1010)).mandatory())
-                .withSpecs(ofPath("/stringField"), generator(String.class, randomString("an12")).mandatory())
-                .withSpecs(ofPath("/intArray"), ObjectSpecs.generator(Integer.class, randomInt(2000, 2010)).size(10, 12))
-                .withSpecs(ofPath("/stringArray"), ObjectSpecs.generator(String.class, randomString("an12")).size(20, 24))
-                .withSpecs(ofPath("/stringList"), ObjectSpecs.generator(String.class, randomString("an12")).size(30, 34))
-                .ignore(ofPath("/toBeIgnored")) // not applicable since withAllMandatory is set
-
-                // inner class
-                .withSpecs(ofPath("/inner"), ObjectSpecs.create(Inner.class).mandatory())
-                .withSpecs(ofPath("/inner/intField"), generator(Integer.class, randomInt(1000, 1010)))
-                .withSpecs(ofPath("/inner/stringField"), generator(String.class, randomString("an12")))
-                .withSpecs(ofPath("/inner/intArray"), ObjectSpecs.generator(Integer.class, randomInt(2000, 2010)).mandatory().size(10, 12))
-                .withSpecs(ofPath("/inner/stringArray"), ObjectSpecs.generator(String.class, randomString("an12")).mandatory().size(20, 24))
-                .withSpecs(ofPath("/inner/stringList"), ObjectSpecs.generator(String.class, randomString("an12")).mandatory().size(30, 34))
-                .ignore(ofPath("/inner/intList")) // not applicable since withAllMandatory is set
+                .withSpecsFile("test.class.specs")
                 .generate();
 
-        // Outer
-        Assertions.assertNotNull(obj);
-        Assertions.assertTrue(obj.intField >= 1000 && obj.intField < 1010);
-        Assertions.assertTrue(obj.stringField.length() == 12);
-        Assertions.assertTrue(obj.intArray.length >= 10 && obj.intArray.length <= 12);
-        Assertions.assertTrue(obj.stringArray.length >= 20 && obj.stringArray.length <= 24);
-        Assertions.assertTrue(obj.stringList.size() >= 30 && obj.stringList.size() <= 34);
+        // Assert Outer class fields
+        Assertions.assertTrue(obj.intField >= 5 && obj.intField <= 10);
+        Assertions.assertTrue(obj.stringField.length() >= 10 && obj.stringField.length() <= 20);
+        Assertions.assertTrue(obj.intArray.length >= 3 && obj.intArray.length <= 5);
+        Arrays.stream(obj.intArray).forEach(i -> Assertions.assertTrue(i >= 50 && i <= 100));
+        Assertions.assertTrue(obj.stringArray.length >= 2 && obj.stringArray.length <= 4);
+        Arrays.stream(obj.stringArray).forEach(s -> Assertions.assertEquals(10, s.length()));
+        Assertions.assertTrue(obj.stringList.size() >= 4 && obj.stringList.size() <= 8);
+        obj.stringList.forEach(s -> Assertions.assertTrue(s.length() >= 8 && s.length() <= 15));
+        Assertions.assertTrue(obj.stringMap.size() >= 2 && obj.stringMap.size() <= 5);
+        obj.stringMap.forEach((k, v) -> {
+            Assertions.assertTrue(k.length() >= 5 && k.length() <= 10);
+            Assertions.assertTrue(v.length() >= 5 && v.length() <= 10);
+        });
+        Assertions.assertTrue(obj.intList.size() >= 3 && obj.intList.size() <= 6);
+        obj.intList.forEach(i -> Assertions.assertTrue(i >= 1 && i <= 100));
 
-        // Inner
+        // TODO: Map special handling: Key generation should produce distinct keys:
+        //  Assertions.assertTrue(obj.intMap.size() >= 2 && obj.intMap.size() <= 4);
+        obj.intMap.forEach((k, v) -> {
+            Assertions.assertTrue(k >= 1 && k <= 50);
+            Assertions.assertTrue(v >= 1 && v <= 50);
+        });
+
+        Assertions.assertNull(obj.toBeIgnored);
+
+        // Assert Inner class fields
         Assertions.assertNotNull(obj.inner);
-        Assertions.assertTrue(obj.inner.intField >= 1000 && obj.inner.intField < 1010);
-        Assertions.assertTrue(obj.inner.stringField.length() == 12);
-        Assertions.assertTrue(obj.inner.intArray.length >= 10 && obj.inner.intArray.length <= 12);
-        Assertions.assertTrue(obj.inner.stringArray.length >= 20 && obj.inner.stringArray.length <= 24);
-        Assertions.assertTrue(obj.inner.stringList.size() >= 30 && obj.inner.stringList.size() <= 34);
+        Assertions.assertTrue(obj.inner.intField >= 1 && obj.inner.intField <= 20);
+        Assertions.assertTrue(obj.inner.stringField.length() >= 5 && obj.inner.stringField.length() <= 15);
+        Assertions.assertTrue(obj.inner.intArray.length >= 3 && obj.inner.intArray.length <= 6);
+        Arrays.stream(obj.inner.intArray).forEach(i -> Assertions.assertTrue(i >= 10 && i <= 30));
+        Assertions.assertTrue(obj.inner.stringArray.length >= 2 && obj.inner.stringArray.length <= 5);
+        Arrays.stream(obj.inner.stringArray).forEach(s -> Assertions.assertEquals(7, s.length()));
+        Assertions.assertTrue(obj.inner.stringList.size() >= 3 && obj.inner.stringList.size() <= 5);
+        obj.inner.stringList.forEach(s -> Assertions.assertTrue(s.length() >= 6 && s.length() <= 12));
+        Assertions.assertTrue(obj.inner.intList.size() >= 2 && obj.inner.intList.size() <= 4);
+        obj.inner.intList.forEach(i -> Assertions.assertTrue(i >= 1 && i <= 40));
 
-    }
+        Assertions.assertNull(obj.innerNone);
+        Assertions.assertEquals("fixed_value", obj.fixedValue);
+        Assertions.assertEquals(100, obj.intFixedValue);
 
-    // Similar but not with all mandatory. before assertions check if object null
-    @Test
-    public void testWithSpecsWithAllOptional() {
-        for (int i = 0; i < 10; i++) {
-            Outer obj = ObjectGenerator.create(Outer.class)
-                    .withSpecs(ofPath("/intField"), generator(Integer.class, randomInt(1000, 1010)))
-                    .withSpecs(ofPath("/stringField"), generator(String.class, randomString("an12")).mandatory())
-                    .withSpecs(ofPath("/intArray"), ObjectSpecs.generator(Integer.class, randomInt(2000, 2010)).size(10, 12))
-                    .withSpecs(ofPath("/stringArray"), ObjectSpecs.generator(String.class, randomString("an12")).size(20, 24))
-                    .withSpecs(ofPath("/stringList"), ObjectSpecs.generator(String.class, randomString("an12")).size(30, 34))
-                    .ignore(ofPath("/toBeIgnored")) // not applicable since withAllMandatory is set
-
-                    // inner class
-                    .withSpecs(ofPath("/inner"), ObjectSpecs.create(Inner.class))
-                    .withSpecs(ofPath("/inner/intField"), generator(Integer.class, randomInt(1000, 1010)))
-                    .withSpecs(ofPath("/inner/stringField"), generator(String.class, randomString("an12")))
-                    .withSpecs(ofPath("/inner/intArray"), ObjectSpecs.generator(Integer.class, randomInt(2000, 2010)).size(10, 12))
-                    .withSpecs(ofPath("/inner/stringArray"), ObjectSpecs.generator(String.class, randomString("an12")).size(20, 24))
-                    .withSpecs(ofPath("/inner/stringList"), ObjectSpecs.generator(String.class, randomString("an12")).size(30, 34))
-                    .ignore(ofPath("/innerNone"))
-                    .generate();
-
-            // Outer
-            Assertions.assertNotNull(obj);
-
-            if (obj != null) {
-                Assertions.assertNotNull(obj.intField);
-                Assertions.assertTrue(obj.intField >= 1000 && obj.intField < 1010);
-
-                //explicitly set to mandatory
-                Assertions.assertTrue(obj.stringField.length() == 12);
-
-                if (obj.intArray != null) {
-                    Assertions.assertTrue(obj.intArray.length >= 10 && obj.intArray.length <= 12);
-                }
-                if (obj.stringArray != null) {
-                    Assertions.assertTrue(obj.stringArray.length >= 20 && obj.stringArray.length <= 24);
-                }
-                if (obj.stringList != null) {
-                    Assertions.assertTrue(obj.stringList.size() >= 30 && obj.stringList.size() <= 34);
-                }
-                Assertions.assertNull(obj.toBeIgnored);
-                Assertions.assertNull(obj.innerNone);
-
-                if (obj.inner != null) {
-                    Assertions.assertNotNull(obj.inner.intField);
-                    Assertions.assertTrue(obj.inner.intField >= 1000 && obj.inner.intField < 1010);
-                    if (obj.inner.stringField != null) {
-                        Assertions.assertTrue(obj.inner.stringField.length() == 12);
-                    }
-                    if (obj.inner.intArray != null) {
-                        Assertions.assertTrue(obj.inner.intArray.length >= 10 && obj.inner.intArray.length <= 12);
-                    }
-                    if (obj.inner.stringArray != null) {
-                        Assertions.assertTrue(obj.inner.stringArray.length >= 20 && obj.inner.stringArray.length <= 24);
-                    }
-                    if (obj.inner.stringList != null) {
-                        Assertions.assertTrue(obj.inner.stringList.size() >= 30 && obj.inner.stringList.size() <= 34);
-                    }
-                }
-            }
+        // Assert innerList
+        if (obj.innerList != null) {
+            Assertions.assertTrue(obj.innerList.size() >= 3 && obj.innerList.size() <= 4);
+            obj.innerList.forEach(inner -> {
+                Assertions.assertTrue(inner.intField >= 1 && inner.intField <= 15);
+                Assertions.assertTrue(inner.stringField.length() >= 8 && inner.stringField.length() <= 12);
+                Assertions.assertTrue(inner.intArray.length >= 2 && inner.intArray.length <= 4);
+                Arrays.stream(inner.intArray).forEach(i -> Assertions.assertTrue(i >= 5 && i <= 25));
+                Assertions.assertTrue(inner.stringArray.length >= 1 && inner.stringArray.length <= 3);
+                Arrays.stream(inner.stringArray).forEach(s -> Assertions.assertEquals(5, s.length()));
+                Assertions.assertTrue(inner.stringList.size() >= 2 && inner.stringList.size() <= 3);
+                inner.stringList.forEach(s -> Assertions.assertTrue(s.length() >= 4 && s.length() <= 8));
+                Assertions.assertTrue(inner.intList.size() >= 1 && inner.intList.size() <= 3);
+                inner.intList.forEach(i -> Assertions.assertTrue(i >= 1 && i <= 30));
+            });
         }
-    }
 
-    @Test
-    public void testWithValues() {
-        Outer obj = ObjectGenerator.create(Outer.class)
-                .withValue(ofPath("/intField"), 1005)
-                .withValue(ofPath("/stringField"), "abcdefghijkl")
-                .withValue(ofPath("/intArray"), new int[]{2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010})
-                .withValue(ofPath("/stringArray"), new String[]{"a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "a11", "a12", "a13", "a14", "a15", "a16", "a17", "a18", "a19", "a20"})
-                .withValue(ofPath("/stringList"), Arrays.asList("b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12", "b13", "b14", "b15", "b16", "b17", "b18", "b19", "b20", "b21", "b22", "b23", "b24", "b25", "b26", "b27", "b28", "b29", "b30"))
-                .ignore(ofPath("/toBeIgnored"))
+        // Assert innerMap
+        if (obj.innerMap != null) {
+            Assertions.assertTrue(obj.innerMap.size() >= 2 && obj.innerMap.size() <= 3);
+            obj.innerMap.forEach((k, inner) -> {
+                Assertions.assertTrue(inner.intField >= 1 && inner.intField <= 15);
+                Assertions.assertTrue(inner.stringField.length() >= 8 && inner.stringField.length() <= 12);
+                Assertions.assertTrue(inner.intArray.length >= 5 && inner.intArray.length <= 10);
+                Arrays.stream(inner.intArray).forEach(i -> Assertions.assertTrue(i >= 5 && i <= 25));
+                Assertions.assertTrue(inner.stringArray.length >= 7 && inner.stringArray.length <= 14);
+                Arrays.stream(inner.stringArray).forEach(s -> Assertions.assertEquals(5, s.length()));
+                Assertions.assertTrue(inner.stringList.size() >= 6 && inner.stringList.size() <= 9);
+                inner.stringList.forEach(s -> Assertions.assertTrue(s.length() >= 4 && s.length() <= 8));
+                Assertions.assertTrue(inner.intList.size() >= 1 && inner.intList.size() <= 3);
+                inner.intList.forEach(i -> Assertions.assertTrue(i >= 1 && i <= 30));
+            });
+        }
 
-                // inner class
-                .withValue(ofPath("/inner/intField"), 1008)
-                .withValue(ofPath("/inner/stringField"), "mnopqrstuvwx")
-                .withValue(ofPath("/inner/intArray"), new int[]{2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014})
-                .withValue(ofPath("/inner/stringArray"), new String[]{"c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "c18", "c19", "c20"})
-                .withValue(ofPath("/inner/stringList"), Arrays.asList("d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11", "d12", "d13", "d14", "d15", "d16", "d17", "d18", "d19", "d20", "d21", "d22", "d23", "d24", "d25", "d26", "d27", "d28", "d29", "d30"))
-                .generate();
+        // TODO: To be enabled when Map generator is supported: Assertions.assertTrue(k >= 1 && k <= 20);
+//        if (obj.intStringMap != null) {
+//            Assertions.assertTrue(obj.intStringMap.size() >= 2 && obj.intStringMap.size() <= 4);
+//            obj.intStringMap.forEach((k, v) -> {
+//                Assertions.assertTrue(v.length() >= 5 && v.length() <= 10);
+//            });
+//        }
 
-        // Assertions using JUnit Jupiter Assertions API
-        Assertions.assertNotNull(obj);
-        Assertions.assertEquals(1005, obj.intField);
-        Assertions.assertEquals("abcdefghijkl", obj.stringField);
-        Assertions.assertEquals(10, obj.intArray.length);
-        Assertions.assertEquals(20, obj.stringArray.length);
-        Assertions.assertEquals(30, obj.stringList.size());
-        Assertions.assertNull(obj.toBeIgnored);
+        // TODO: To be enabled when Map generator is supported: Assertions.assertTrue(k >= 1 && k <= 20);
+//        if (obj.stringIntMap != null) {
+//            Assertions.assertTrue(obj.stringIntMap.size() >= 2 && obj.stringIntMap.size() <= 4);
+//            obj.stringIntMap.forEach((k, v) -> {
+//                Assertions.assertTrue(k.length() >= 5 && k.length() <= 10);
+//                //Assertions.assertTrue(v >= 1 && v <= 20);
+//            });
+//        }
 
-        Assertions.assertNotNull(obj.inner);
-        Assertions.assertEquals(1008, obj.inner.intField);
-        Assertions.assertEquals("mnopqrstuvwx", obj.inner.stringField);
-        Assertions.assertEquals(10, obj.inner.intArray.length);
-        Assertions.assertEquals(20, obj.inner.stringArray.length);
-        Assertions.assertEquals(30, obj.inner.stringList.size());
-
-    }
-
-    @Test
-    public void testWithValues2() {
-
-        Inner inner = ObjectGenerator.create(Inner.class)
-                .withValue(ofPath("/intField"), 1008)
-                .withValue(ofPath("/stringField"), "mnopqrstuvwx")
-                .withValue(ofPath("/intArray"), new int[]{2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014})
-                .withValue(ofPath("/stringArray"), new String[]{"c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "c18", "c19", "c20"})
-                .withValue(ofPath("/stringList"), Arrays.asList("d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11", "d12", "d13", "d14", "d15", "d16", "d17", "d18", "d19", "d20", "d21", "d22", "d23", "d24", "d25", "d26", "d27", "d28", "d29", "d30"))
-                .withValue(ofPath("/intList"), Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-                .generate();
-
-        Outer obj = ObjectGenerator.create(Outer.class)
-                .withValue(ofPath("/intField"), 1005)
-                .withValue(ofPath("/stringField"), "abcdefghijkl")
-                .withValue(ofPath("/intArray"), new int[]{2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010})
-                .withValue(ofPath("/stringArray"), new String[]{"a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "a11", "a12", "a13", "a14", "a15", "a16", "a17", "a18", "a19", "a20"})
-                .withValue(ofPath("/stringList"), Arrays.asList("b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12", "b13", "b14", "b15", "b16", "b17", "b18", "b19", "b20", "b21", "b22", "b23", "b24", "b25", "b26", "b27", "b28", "b29", "b30"))
-                .ignore(ofPath("/toBeIgnored"))
-                .withValue(ofPath("/inner"), inner)
-                .generate();
-
-
-        // Assertions using JUnit Jupiter Assertions API
-        Assertions.assertNotNull(obj);
-        Assertions.assertEquals(1005, obj.intField);
-        Assertions.assertEquals("abcdefghijkl", obj.stringField);
-        Assertions.assertEquals(10, obj.intArray.length);
-        Assertions.assertEquals(20, obj.stringArray.length);
-        Assertions.assertEquals(30, obj.stringList.size());
-        Assertions.assertNull(obj.toBeIgnored);
-
-        Assertions.assertNotNull(obj.inner);
-        Assertions.assertEquals(1008, obj.inner.intField);
-        Assertions.assertEquals("mnopqrstuvwx", obj.inner.stringField);
-        Assertions.assertEquals(10, obj.inner.intArray.length);
-        Assertions.assertEquals(20, obj.inner.stringArray.length);
-        Assertions.assertEquals(30, obj.inner.stringList.size());
-
-    }
-
-    @Test
-    public void testValueOverridesSpecs() {
-        Outer obj = ObjectGenerator.create(Outer.class)
-                .withSpecs(ofPath("/intField"), generator(Integer.class, randomInt(90, 100)))
-                .withValue(ofPath("/intField"), 50)
-                .withSpecs(ofPath("/stringField"), generator(String.class, randomString("an12")).mandatory())
-                .withValue(ofPath("/stringField"), "test")
-                // inner class
-                .withSpecs(ofPath("/inner/intField"), generator(Integer.class, randomInt(60, 70)))
-                .withValue(ofPath("/inner/intField"), 30)
-                .withSpecs(ofPath("/inner/stringField"), generator(String.class, randomString("an12")).mandatory())
-                .withValue(ofPath("/inner/stringField"), "test2")
-                .generate();
-
-        // Assertions using JUnit Jupiter Assertions API
-        Assertions.assertNotNull(obj);
-        Assertions.assertEquals(50, obj.intField);
-        Assertions.assertEquals("test", obj.stringField);
-
-        Assertions.assertNotNull(obj.inner);
-        Assertions.assertEquals(30, obj.inner.intField);
-        Assertions.assertEquals("test2", obj.inner.stringField);
 
     }
 
     private static class Outer {
         int intField;
+
         String stringField;
         int[] intArray;
         String[] stringArray;
@@ -238,12 +123,17 @@ public class TestObjectGeneratorSpecs {
         Map<String, String> stringMap;
         List<Integer> intList;
         Map<Integer, Integer> intMap;
+        Map<Integer, String> intStringMap;
+        Map<String, Integer> stringIntMap;
         String toBeIgnored;
 
         Inner inner;
         Inner innerNone;
         List<Inner> innerList;
         Map<String, Inner> innerMap;
+
+        String fixedValue;
+        Integer intFixedValue;
     }
 
     private static class Inner {

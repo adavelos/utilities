@@ -33,7 +33,7 @@ public class DefaultGeneratorRegistry {
         defaultGeneratorRegistry.register(java.lang.Integer.class, Generators.randomInt(1, 100));
         defaultGeneratorRegistry.register(java.lang.Short.class, Generators.randomShort((short) 1, (short) 100));
         defaultGeneratorRegistry.register(java.lang.Byte.class, Generators.randomByte((byte) 1, (byte) 100));
-        defaultGeneratorRegistry.register(java.lang.Character.class, Generators.randomCharacter((char) 1, (char) 100));
+        defaultGeneratorRegistry.register(java.lang.Character.class, Generators.randomCharacter('A', 'z'));
         defaultGeneratorRegistry.register(java.lang.Long.class, Generators.randomLong(1, 100));
         defaultGeneratorRegistry.register(java.lang.Double.class, Generators.randomDouble(1, 100));
         defaultGeneratorRegistry.register(java.lang.Float.class, Generators.randomFloat(1, 100));
@@ -43,7 +43,7 @@ public class DefaultGeneratorRegistry {
         defaultGeneratorRegistry.register(java.math.BigDecimal.class, Generators.randomBigDecimal(1, 100));
 
         // Boolean
-        defaultGeneratorRegistry.register(java.lang.Boolean.class, Generators. randomBoolean());
+        defaultGeneratorRegistry.register(java.lang.Boolean.class, Generators.randomBoolean());
 
         // Dates
         defaultGeneratorRegistry.register(java.time.LocalDate.class, Generators.randomLocalDate(-100, 100));

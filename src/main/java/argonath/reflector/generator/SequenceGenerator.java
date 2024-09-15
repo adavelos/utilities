@@ -14,7 +14,7 @@ public class SequenceGenerator implements Generator<Integer> {
     }
 
     @Override
-    public Integer generate(Long seed, Object... args) {
+    public Integer generate(Long seed) {
         int result = current;
         current += step;
         if (current < 0) { // overflow

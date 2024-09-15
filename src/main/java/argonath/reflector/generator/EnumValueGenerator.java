@@ -18,8 +18,8 @@ public class EnumValueGenerator<T extends Enum<T>> implements Generator<T> {
     }
 
     @Override
-    public T generate(Long seed, Object... args) {
-        return valueSelector.drawValue(seed, args);
+    public T generate(Long seed) {
+        return valueSelector.drawValue(seed);
     }
 
     @Override

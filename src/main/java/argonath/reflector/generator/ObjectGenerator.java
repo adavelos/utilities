@@ -3,12 +3,14 @@ package argonath.reflector.generator;
 import argonath.reflector.factory.ObjectFactory;
 import argonath.reflector.generator.model.Generator;
 import argonath.reflector.generator.model.ObjectSpecs;
+import argonath.reflector.generator.model.SpecsExpressionParser;
 import argonath.reflector.reflection.ReflectiveAccessor;
 import argonath.reflector.reflection.ReflectiveMutator;
 import argonath.reflector.reflection.TypeExplorer;
 import argonath.reflector.types.iterable.IterableType;
 import argonath.reflector.types.iterable.IterableTypes;
 import argonath.utils.Assert;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -153,6 +155,7 @@ public class ObjectGenerator {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         return ret;
     }
 
@@ -199,6 +202,27 @@ public class ObjectGenerator {
             return this;
         }
 
+        /**
+         * Sets specs using a selector and a specs expression of the type: optionality|cardinality|generator
+         */
+        public Builder<T> withSpecs(FieldSelector selector, String specsExpression) {
+            ObjectSpecs<T> specs = SpecsExpressionParser.parseSpec(selector.expression(), specsExpression);
+            this.config.withSpecs(selector, specs);
+            return this;
+        }
+
+        /**
+         * Set specs using a complete expression of the type: /path/to/field=optionality|cardinality|generator
+         */
+        public Builder<T> withSpecs(String specsExpression) {
+            Pair<String, ObjectSpecs<T>> pair = SpecsExpressionParser.parseSpec(specsExpression);
+            this.config.withSpecs(FieldSelector.ofPath(pair.getLeft()), pair.getRight());
+            return this;
+        }
+
+        /**
+         * Load specs from a file
+         */
         public Builder<T> withSpecsFile(String filename) {
             this.config.withSpecsFile(filename);
             return this;

@@ -119,6 +119,10 @@ public class GeneratorContext {
         return this.seed;
     }
 
+    public Element parent() {
+        return elements.size() > 1 ? elements.get(elements.size() - 2) : null;
+    }
+
     static class Element {
 
         Field field;

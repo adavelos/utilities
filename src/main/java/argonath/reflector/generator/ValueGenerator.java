@@ -24,8 +24,8 @@ public class ValueGenerator<T> implements Generator<T> {
     }
 
     @Override
-    public T generate(Long seed, Object... args) {
-        return valueSelector.drawValue(seed, args);
+    public T generate(Long seed) {
+        return valueSelector.drawValue(seed);
     }
 
     @Override

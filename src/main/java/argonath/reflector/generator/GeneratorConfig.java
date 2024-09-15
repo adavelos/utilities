@@ -2,7 +2,7 @@ package argonath.reflector.generator;
 
 import argonath.reflector.config.Configuration;
 import argonath.reflector.generator.model.ObjectSpecs;
-import argonath.reflector.generator.model.SpecsFileLoader;
+import argonath.reflector.generator.model.SpecsExpressionParser;
 import argonath.reflector.registry.TypeRegistry;
 import argonath.utils.WcMatcher;
 
@@ -95,7 +95,7 @@ public class GeneratorConfig {
     }
 
     public GeneratorConfig withSpecsFile(String filename) {
-        Map<String, ObjectSpecs> specs = SpecsFileLoader.parseSpecs(filename);
+        Map<String, ObjectSpecs<?>> specs = SpecsExpressionParser.parseSpecs(filename);
         specs.forEach((k, v) -> {
             withSpecs(FieldSelector.ofPath(k), v); // all keys in specs file are referring to paths
         });

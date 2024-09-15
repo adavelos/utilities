@@ -2,6 +2,8 @@ package argonath.reflector.reflection;
 
 import argonath.reflector.factory.ObjectFactory;
 import argonath.reflector.types.iterable.IterableTypes;
+import argonath.reflector.types.simple.SimpleType;
+import argonath.reflector.types.simple.SimpleTypes;
 import argonath.utils.Assert;
 import sun.misc.Unsafe;
 
@@ -35,6 +37,11 @@ public class ReflectiveMutator {
             // direct assignment when the value is of the same type as the field
             if (fieldClazz.isAssignableFrom(valueClazz)) {
                 field.set(obj, value);
+            } else if (value instanceof String valueStr && SimpleTypes.isSimpleType(fieldClazz)) {
+                // Simple Types convertible from String
+                SimpleType<?> simpleType = SimpleTypes.simpleType(fieldClazz);
+                field.set(obj, simpleType.fromString(valueStr));
+            // TODO: here an additional 'else' will be added for custom type converters
             } else {
                 try {
                     // try brute force before failing

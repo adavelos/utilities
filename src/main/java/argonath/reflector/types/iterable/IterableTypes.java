@@ -66,4 +66,11 @@ public class IterableTypes {
         return (Collection<Object>) iterableType.asCollection(object);
     }
 
+    public static boolean isMap(IterableType type) {
+        if (type == null) {
+            return false;
+        }
+        return type == BuiltInIterableTypes.MAP;
+    }
+
 }

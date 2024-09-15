@@ -27,7 +27,7 @@ public class ValueSelector<T> {
         reset();
     }
 
-    public T drawValue(Long seed, Object... args) {
+    public T drawValue(Long seed) {
         int size = values.size();
         if (size == 0) {
             reset();
