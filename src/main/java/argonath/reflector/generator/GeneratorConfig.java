@@ -1,8 +1,12 @@
 package argonath.reflector.generator;
 
 import argonath.reflector.config.Configuration;
+import argonath.reflector.generator.codelist.CodeList;
+import argonath.reflector.generator.codelist.CodeLists;
+import argonath.reflector.generator.codelist.GlobalCodeLists;
 import argonath.reflector.generator.model.ObjectSpecs;
 import argonath.reflector.generator.model.SpecsExpressionParser;
+import argonath.reflector.reflection.TypeExplorer;
 import argonath.reflector.registry.TypeRegistry;
 import argonath.utils.WcMatcher;
 
@@ -24,6 +28,8 @@ public class GeneratorConfig {
 
     private GeneratorStrategy strategy;
 
+    private Map<String, CodeList<?>> codeLists;
+
     private boolean lenient;
 
     private Long seed;
@@ -41,6 +47,7 @@ public class GeneratorConfig {
         this.strategy = strategy;
         this.seed = null;
         this.lenient = Configuration.isLenient();
+        this.codeLists = GlobalCodeLists.all();
     }
 
     public GeneratorConfig() {
@@ -96,25 +103,46 @@ public class GeneratorConfig {
 
     public GeneratorConfig withSpecsFile(String filename) {
         Map<String, ObjectSpecs<?>> specs = SpecsExpressionParser.parseSpecs(filename);
-        specs.forEach((k, v) -> {
-            withSpecs(FieldSelector.ofPath(k), v); // all keys in specs file are referring to paths
-        });
+        specs.forEach((k, v) -> withSpecs(FieldSelector.ofPath(k), v)); // all keys in specs file are referring to paths
         return this;
     }
 
-    private <T> void merge(TypeRegistry<ObjectSpecs<?>> specsMap, Class<?> clazz, ObjectSpecs<?> specs) {
-        ObjectSpecs<?> curSpecs = specsMap.get(clazz);
-        if (curSpecs != null) {
-            specs = ObjectSpecs.merge(curSpecs, specs);
+    @SuppressWarnings("unchecked")
+    private <T> void merge(TypeRegistry<ObjectSpecs<?>> specsMap, Class<?> clazz, ObjectSpecs<T> specs) {
+        ObjectSpecs<?> rawSpecs = specsMap.get(clazz);
+        if (rawSpecs == null) {
+            specsMap.register(clazz, specs);
+            return;
         }
+        Class<?> elementClass = TypeExplorer.elementType(rawSpecs.getClass());
+        if (!elementClass.equals(clazz)) {
+            throw new IllegalArgumentException("Specs for " + elementClass + " cannot be merged with " + clazz);
+        }
+
+        ObjectSpecs<T> curSpecs = (ObjectSpecs<T>) rawSpecs;
+        specs = ObjectSpecs.merge(curSpecs, specs);
+
         specsMap.register(clazz, specs);
     }
 
-    private void merge(Map<String, ObjectSpecs<?>> specsMap, String expression, ObjectSpecs<?> specs) {
-        ObjectSpecs<?> curSpecs = specsMap.get(expression);
-        if (curSpecs != null) {
-            specs = ObjectSpecs.merge(curSpecs, specs);
+    @SuppressWarnings("unchecked")
+    private <T> void merge(Map<String, ObjectSpecs<?>> specsMap, String expression, ObjectSpecs<?> specs) {
+        ObjectSpecs<?> rawSpecs = specsMap.get(expression);
+        if (rawSpecs == null) {
+            specsMap.put(expression, specs);
+            return;
         }
+
+        Class<?> class1 = TypeExplorer.elementType(rawSpecs.getClass());
+        Class<?> class2 = TypeExplorer.elementType(specs.getClass());
+        if (class1.equals(class2)) {
+            throw new IllegalArgumentException("Specs for " + class1 + " cannot be merged with " + class2);
+        }
+
+        ObjectSpecs<T> merge1 = (ObjectSpecs<T>) rawSpecs;
+        ObjectSpecs<T> merge2 = (ObjectSpecs<T>) specs;
+        specs = ObjectSpecs.merge(merge1, merge2);
+
         specsMap.put(expression, specs);
     }
 
@@ -143,7 +171,9 @@ public class GeneratorConfig {
     }
 
     public GeneratorConfig withCodeListFile(String filename) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Map<String, CodeList<String>> loadedCodeLists = CodeLists.load(filename);
+        codeLists.putAll(loadedCodeLists);
+        return this;
     }
 
     public GeneratorConfig withConfigProperty(String property, String value) {
@@ -179,6 +209,7 @@ public class GeneratorConfig {
         return this.strategy;
     }
 
+    @SuppressWarnings("java:S1452")
     public ObjectSpecs<?> specs(GeneratorContext.Element element, GeneratorContext ctx) {
         ObjectSpecs<?> result = null;
 
@@ -232,6 +263,11 @@ public class GeneratorConfig {
 
     public Long seed() {
         return this.seed;
+    }
+
+    @SuppressWarnings("java:S1452")
+    public CodeList<?> getCodeList(String key) {
+        return codeLists.get(key);
     }
 
 }

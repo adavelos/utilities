@@ -3,6 +3,8 @@ package argonath.random;
 import argonath.utils.Assert;
 
 public class TextGenerator {
+    private TextGenerator() {
+    }
     private static final String[] WORD_BANK = {
             "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do",
             "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", "enim",

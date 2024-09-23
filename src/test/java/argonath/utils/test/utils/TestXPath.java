@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class TestXPath {
 
     @Test
-    public void testValueXPath() {
+    void testValueXPath() {
         String xpath = "/root/element1/element2";
         ValueSelector xPath = ValueSelector.parse(xpath);
         Assertions.assertEquals(3, xPath.elements().size(), "XPath Parse - Element Count");

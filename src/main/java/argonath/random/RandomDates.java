@@ -5,6 +5,8 @@ import argonath.utils.Assert;
 import java.time.*;
 
 public class RandomDates {
+    private RandomDates() {
+    }
 
     /**
      * Generate a random date between minusDays and plusDays days from now.

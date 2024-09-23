@@ -3,6 +3,8 @@ package argonath.utils;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ExpressionUtil {
+    private ExpressionUtil() {
+    }
 
     public static Pair<String, String> parseBrackets(String element) {
         int start = element.indexOf('[');

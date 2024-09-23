@@ -16,7 +16,7 @@ public class TestObjectFactory {
     }
 
     @Test
-    public void testObjectFactory() {
+    void testObjectFactory() {
 
         Collection<?> collection = ObjectFactory.create(Collection.class);
         assertTrue(collection instanceof ArrayList);

@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TestObjectReaderValueMapper {
@@ -19,7 +16,7 @@ public class TestObjectReaderValueMapper {
     }
 
     @Test
-    public void testValueMapper() {
+    void testValueMapper() {
         TestClass testObject = new TestClass();
         testObject.simpleMap = Map.of("key1", "value1", "key2", "value2");
 
@@ -46,15 +43,18 @@ public class TestObjectReaderValueMapper {
         Collections.sort((List<String>) o4);
         Assertions.assertEquals(List.of("key1", "key2"), o4);
         List<String> l4 = ObjectReader.list(testObject, "/simpleMap.key", String.class);
-        Collections.sort(l4);
-        Assertions.assertEquals(List.of("key1", "key2"), l4);
+        List<String> l4_sorted = new ArrayList<>(l4);
+        Collections.sort(l4_sorted);
+        Assertions.assertEquals(List.of("key1", "key2"), l4_sorted);
 
         Object o5 = ObjectReader.get(testObject, "/simpleMap.value");
-        Collections.sort((List<String>) o5);
-        Assertions.assertEquals(List.of("value1", "value2"), o5);
+        List<String> o5_sorted = (List<String>) o5;
+        Collections.sort(o5_sorted);
+        Assertions.assertEquals(List.of("value1", "value2"), o5_sorted);
         List<String> l5 = ObjectReader.list(testObject, "/simpleMap.value", String.class);
-        Collections.sort(l5);
-        Assertions.assertEquals(List.of("value1", "value2"), l5);
+        List<String> l5_sorted = new ArrayList<>(l5);
+        Collections.sort(l5_sorted);
+        Assertions.assertEquals(List.of("value1", "value2"), l5_sorted);
 
         // Complex Map
         testObject.complexMap = Map.of("key1", new InnerTestClass("value1"), "key2", new InnerTestClass("value2"));
@@ -73,8 +73,9 @@ public class TestObjectReaderValueMapper {
         Collections.sort((List<String>) o8);
         Assertions.assertEquals(List.of("key1", "key2"), o8);
         List<String> l8 = ObjectReader.list(testObject, "/complexMap.key", String.class);
-        Collections.sort(l8);
-        Assertions.assertEquals(List.of("key1", "key2"), l8);
+        List<String> l8_sorted = new ArrayList<>(l8);
+        Collections.sort(l8_sorted);
+        Assertions.assertEquals(List.of("key1", "key2"), l8_sorted);
 
         Object o9 = ObjectReader.get(testObject, "/complexMap.value");
         List<InnerTestClass> l9 = (List<InnerTestClass>) o9;

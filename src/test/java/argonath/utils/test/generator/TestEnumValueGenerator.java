@@ -12,12 +12,12 @@ import java.util.Set;
 import static argonath.reflector.generator.Generators.enumValueSelector;
 import static argonath.reflector.generator.model.ObjectSpecs.create;
 
-public class TestEnumValueGenerator {
+class TestEnumValueGenerator {
 
     private enum TestEnum1 {A, B, C}
 
     @Test
-    public void testEnumValueSelectorWithReplacement() {
+    void testEnumValueSelectorWithReplacement() {
         TestClass obj = ObjectGenerator.create(TestClass.class)
                 .withSpecs(FieldSelector.ofPath("/enum1"), create(TestEnum1.class).generator(enumValueSelector(TestEnum1.class, true)))
                 .withSpecs(FieldSelector.ofPath("/enumArray1"), create(TestEnum1.class).generator(enumValueSelector(TestEnum1.class, true)).size(3))
@@ -27,7 +27,7 @@ public class TestEnumValueGenerator {
     }
 
     @Test
-    public void testEnumValueSelectorWithoutReplacement() {
+    void testEnumValueSelectorWithoutReplacement() {
         TestClass obj = ObjectGenerator.create(TestClass.class)
                 .withSpecs(FieldSelector.ofPath("/enum1"), create(TestEnum1.class).generator(enumValueSelector(TestEnum1.class, false)))
                 .withSpecs(FieldSelector.ofPath("/enumArray1"), create(TestEnum1.class).generator(enumValueSelector(TestEnum1.class, false)).size(3))

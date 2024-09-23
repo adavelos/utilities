@@ -13,7 +13,6 @@ import argonath.reflector.types.simple.SimpleTypes;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ObjectReader {
 
@@ -175,7 +174,7 @@ public class ObjectReader {
         // Accumulator of elements is always a List, no matter the underlying iterable type collection type
         List<ResolvedObject> accumulator = filteredElements.stream()
                 .map(item -> resolve(item, pathElement.next(), context)) // recursively resolve the nested elements
-                .collect(Collectors.toList());
+                .toList();
 
         ResolvedObject result = flatten(accumulator, context);
         return result;
@@ -215,7 +214,7 @@ public class ObjectReader {
         if (object == null) {
             return mode.isGet() ?
                     ResolvedObject.singleObject(null, context) :
-                    ResolvedObject.objectList(Collections.emptyList(Object.class));
+                    ResolvedObject.objectList(Collections.emptyList());
         }
 
         // if object is not list
@@ -224,7 +223,7 @@ public class ObjectReader {
         }
 
         // Cast to List to process further
-        Collection<Object> collection = Collections.asCollection(object, Object.class);
+        Collection<Object> collection = Collections.asCollection(object);
 
         // if object is list and requested GET mode, return the list as resolved object
         if (mode == ReaderContext.ResolutionMode.GET) {
@@ -232,11 +231,11 @@ public class ObjectReader {
             return resolvedObject;
         }
 
-        List<Object> list = Collections.asList(object, Object.class);
+        List<Object> list = Collections.asList(object);
 
         // return the resolved object as list
         if (list.isEmpty()) {
-            list = Collections.emptyList(Object.class);
+            list = Collections.emptyList();
         }
         return ResolvedObject.objectList(list);
     }
@@ -274,7 +273,7 @@ public class ObjectReader {
         return wrapResolvedObject(accumulator.stream()
                 .map(ResolvedObject::asList)
                 .flatMap(List::stream)
-                .collect(Collectors.toList()), ctx);
+                .toList(), ctx);
     }
 
 }

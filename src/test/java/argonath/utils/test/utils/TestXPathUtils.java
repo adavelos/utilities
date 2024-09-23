@@ -9,7 +9,7 @@ import java.util.*;
 public class TestXPathUtils {
 
     @Test
-    public void testXPathCreate() {
+    void testXPathCreate() {
         // Varargs
         Assertions.assertEquals("/test", XPathUtil.create("test"), "XPath Build - Single Vararg");
         Assertions.assertEquals("/test/second", XPathUtil.create("test", "second"), "XPath Build - Double Varargs");
@@ -27,7 +27,7 @@ public class TestXPathUtils {
     }
 
     @Test
-    public void testXPathAppend() {
+    void testXPathAppend() {
         Assertions.assertEquals("/head/second/third", XPathUtil.append("/head", "second", "third"), "XPath Build - Append Varargs");
         Assertions.assertEquals("/head/second/third/fourth", XPathUtil.append("/head", "/second/third", "fourth"), "XPath Build - Append Varargs Combo");
         Assertions.assertEquals("/head/second", XPathUtil.append("/head", "second"), "XPath Build - Append Single Vararg");
@@ -38,7 +38,7 @@ public class TestXPathUtils {
     }
 
     @Test
-    public void testXPathPrepend() {
+    void testXPathPrepend() {
         Assertions.assertEquals("/second/third/tail", XPathUtil.prepend("/tail", "second", "third"), "XPath Build - Prepend Varargs");
         Assertions.assertEquals("/second/third/fourth/tail", XPathUtil.prepend("/tail", "/second/third", "fourth"), "XPath Build - Prepend Varargs Combo");
         Assertions.assertEquals("/second/tail", XPathUtil.prepend("/tail", "second"), "XPath Build - Prepend Single Vararg");
@@ -49,7 +49,7 @@ public class TestXPathUtils {
     }
 
     @Test
-    public void testCanonicalPath() {
+    void testCanonicalPath() {
         Assertions.assertEquals("/test/second", XPathUtil.canonicalPath("/test/second"), "Canonical Path - No change");
         Assertions.assertEquals("test/second", XPathUtil.canonicalPath("test//second"), "Canonical Path - Relative Path");
         Assertions.assertEquals("/test/second", XPathUtil.canonicalPath("//test/second"), "Canonical Path - Invalid Head");
@@ -59,7 +59,7 @@ public class TestXPathUtils {
     }
 
     @Test
-    public void testSplit() {
+    void testSplit() {
         Assertions.assertEquals(XPathUtil.split("").size(), 0, "Split Empty String");
         Assertions.assertEquals(XPathUtil.split("/").size(), 0, "Split Root Path");
         Assertions.assertEquals(XPathUtil.split("//").size(), 0, "Split Root Path - double slashes");
@@ -71,7 +71,7 @@ public class TestXPathUtils {
     }
 
     @Test
-    public void testIsValid() {
+    void testIsValid() {
         Assertions.assertTrue(XPathUtil.isValid("/test/element"), "Simple Valid Path");
         Assertions.assertTrue(XPathUtil.isValid("/test//element"), "NonCanonical Valid Path");
         Assertions.assertTrue(XPathUtil.isValid("test//element"), "NonCanonical Relative Valid Path");
@@ -94,7 +94,7 @@ public class TestXPathUtils {
     }
 
     @Test
-    public void testStripQuotes() {
+    void testStripQuotes() {
         Assertions.assertEquals("test", XPathUtil.stripQuotes("\"test\""), "Strip Quotes - Double");
         Assertions.assertEquals("test", XPathUtil.stripQuotes("'test'"), "Strip Quotes - Single");
         Assertions.assertEquals("test", XPathUtil.stripQuotes("test"), "Strip Quotes - None");
@@ -106,7 +106,7 @@ public class TestXPathUtils {
     }
 
     @Test
-    public void testCombine() {
+    void testCombine() {
         Assertions.assertEquals("/test/element", XPathUtil.combine(List.of("test", "element")), "Combine - Simple");
         Assertions.assertEquals("/test/element/path", XPathUtil.combine(List.of("test", "element", "path")), "Combine - Multi");
         // test with trailing slash
@@ -114,6 +114,21 @@ public class TestXPathUtils {
         // test with leading slash
         Assertions.assertEquals("/test/element/path", XPathUtil.combine(List.of("/test", "element", "path")), "Combine - Multi with leading slash");
 
+    }
+
+    @Test
+    void testParent() {
+        String path = "/parent/child";
+        Assertions.assertEquals("/parent", XPathUtil.parent(path), "Parent - Simple");
+
+        String path2 = "/parent/child/grandchild";
+        Assertions.assertEquals("/parent/child", XPathUtil.parent(path2), "Parent - Multi");
+
+        String path3 = "/parent";
+        Assertions.assertEquals("/", XPathUtil.parent(path3), "Parent - Root");
+
+        String path4 = "/";
+        Assertions.assertEquals(null, XPathUtil.parent(path4), "Parent - Empty");
     }
 }
 

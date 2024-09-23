@@ -7,7 +7,10 @@ import java.math.BigInteger;
 import java.time.*;
 
 class BuiltInSimpleTypes {
-    static SimpleType<String> STRING = new SimpleType<>() {
+    private BuiltInSimpleTypes() {
+    }
+
+    static final SimpleType<String> STRING = new SimpleType<>() {
 
         @Override
         public String toString(String object) {
@@ -20,7 +23,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<Integer> INTEGER = new SimpleType<>() {
+    static final SimpleType<Integer> INTEGER = new SimpleType<>() {
 
         @Override
         public String toString(Integer object) {
@@ -33,7 +36,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<Float> FLOAT = new SimpleType<>() {
+    static final SimpleType<Float> FLOAT = new SimpleType<>() {
 
         @Override
         public String toString(Float object) {
@@ -46,7 +49,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<Double> DOUBLE = new SimpleType<>() {
+    static final SimpleType<Double> DOUBLE = new SimpleType<>() {
 
         @Override
         public String toString(Double object) {
@@ -59,7 +62,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<Long> LONG = new SimpleType<>() {
+    static final SimpleType<Long> LONG = new SimpleType<>() {
 
         @Override
         public String toString(Long object) {
@@ -72,7 +75,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<Boolean> BOOLEAN = new SimpleType<>() {
+    static final SimpleType<Boolean> BOOLEAN = new SimpleType<>() {
 
         @Override
         public String toString(Boolean object) {
@@ -85,7 +88,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<LocalDate> LOCAL_DATE = new SimpleType<>() {
+    static final SimpleType<LocalDate> LOCAL_DATE = new SimpleType<>() {
 
         @Override
         public String toString(LocalDate object) {
@@ -98,7 +101,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<LocalDateTime> LOCAL_DATE_TIME = new SimpleType<>() {
+    static final SimpleType<LocalDateTime> LOCAL_DATE_TIME = new SimpleType<>() {
 
         @Override
         public String toString(LocalDateTime object) {
@@ -111,8 +114,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    // offset date time
-    static SimpleType<OffsetDateTime> OFFSET_DATE_TIME = new SimpleType<>() {
+    static final SimpleType<OffsetDateTime> OFFSET_DATE_TIME = new SimpleType<>() {
 
         @Override
         public String toString(OffsetDateTime object) {
@@ -125,7 +127,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<OffsetTime> OFFSET_TIME = new SimpleType<>() {
+    static final SimpleType<OffsetTime> OFFSET_TIME = new SimpleType<>() {
 
         @Override
         public String toString(OffsetTime object) {
@@ -138,8 +140,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    // zoned date time
-    static SimpleType<ZonedDateTime> ZONED_DATE_TIME = new SimpleType<>() {
+    static final SimpleType<ZonedDateTime> ZONED_DATE_TIME = new SimpleType<>() {
 
         @Override
         public String toString(ZonedDateTime object) {
@@ -152,7 +153,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<BigInteger> BIG_INTEGER = new SimpleType<>() {
+    static final SimpleType<BigInteger> BIG_INTEGER = new SimpleType<>() {
 
         @Override
         public String toString(BigInteger object) {
@@ -165,7 +166,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<BigDecimal> BIG_DECIMAL = new SimpleType<>() {
+    static final SimpleType<BigDecimal> BIG_DECIMAL = new SimpleType<>() {
 
         @Override
         public String toString(BigDecimal object) {
@@ -178,7 +179,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<Character> CHARACTER = new SimpleType<>() {
+    static final SimpleType<Character> CHARACTER = new SimpleType<>() {
 
         @Override
         public String toString(Character object) {
@@ -191,7 +192,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<Byte> BYTE = new SimpleType<>() {
+    static final SimpleType<Byte> BYTE = new SimpleType<>() {
 
         @Override
         public String toString(Byte object) {
@@ -204,7 +205,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<Short> SHORT = new SimpleType<>() {
+    static final SimpleType<Short> SHORT = new SimpleType<>() {
 
         @Override
         public String toString(Short object) {
@@ -217,7 +218,7 @@ class BuiltInSimpleTypes {
         }
     };
 
-    static SimpleType<byte[]> BYTE_ARRAY = new SimpleType<>() {
+    static final SimpleType<byte[]> BYTE_ARRAY = new SimpleType<>() {
 
         @Override
         public String toString(byte[] object) {

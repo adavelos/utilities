@@ -11,12 +11,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Provides utility methods to create new objects or mutate existing objects using reflection.
  */
 public class ReflectiveMutator {
+    private ReflectiveMutator() {
+    }
 
     public static void setFieldValue(Field field, Object obj, Object value) {
         Assert.notNull(field, "Field cannot be null");
@@ -47,11 +48,11 @@ public class ReflectiveMutator {
                     // try brute force before failing
                     field.set(obj, value);
                 } catch (Exception e) {
-                    throw new RuntimeException("Cannot Assign Type: '" + valueClazz + "' to '" + fieldClazz + "'");
+                    throw new IllegalStateException("Cannot Assign Type: '" + valueClazz + "' to '" + fieldClazz + "'");
                 }
             }
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Cannot Set Value for Field:" + field.getType());
+            throw new IllegalStateException("Cannot Set Value for Field:" + field.getType());
         }
     }
 
@@ -79,7 +80,7 @@ public class ReflectiveMutator {
         }
         return list.stream()
                 .map(obj -> safeCast(obj, clazz))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -115,7 +116,7 @@ public class ReflectiveMutator {
                 ret = (T) unsafe.allocateInstance(clazz);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Cannot Instantiate Object of:" + clazz.getName(), e);
+            throw new IllegalStateException("Cannot Instantiate Object of:" + clazz.getName(), e);
         }
         return ret;
     }

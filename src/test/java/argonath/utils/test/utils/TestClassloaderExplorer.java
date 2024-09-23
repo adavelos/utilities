@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class TestClassloaderExplorer {
 
     @Test
-    public void test() {
+    void test() {
         Class<?> res = ClassloaderExplorer.findClosestImplementation(I1.class);
         Assertions.assertEquals("argonath.utils.test.utils.model.sub.C1", res.getName());
     }

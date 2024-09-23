@@ -1,7 +1,6 @@
 package argonath.random;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -9,12 +8,6 @@ import java.util.Set;
  * Extension of the ValueSelector class that is specifically designed to work with Enum values.
  */
 public class EnumValueSelector<T extends Enum<T>> extends ValueSelector<T> {
-
-    private List<T> values;
-    private List<T> originalValues;
-
-    private boolean withReplacement;
-
 
     public EnumValueSelector(boolean withReplacement, Class<T> enumClass) {
         super(withReplacement, getEnumValues(enumClass));

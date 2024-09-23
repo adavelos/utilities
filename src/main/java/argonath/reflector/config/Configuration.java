@@ -9,6 +9,8 @@ import java.util.Map;
  * Wraps reflector configurable settigns
  */
 public class Configuration {
+    private Configuration() {
+    }
 
     // Property Names: must start with 'reflector.' prefix
     private static final String PROP_DATE_FORMAT = "reflector.date.format";
@@ -19,24 +21,23 @@ public class Configuration {
 
     private static final String PROP_ZONED_DATE_TIME_FORMAT = "reflector.zoned.date.time.format";
 
-    private static Map<String, String> PROPERTIES = new HashMap<>();
-
     private static final String REFLECTOR_PROPS_FILENAME = "reflector.properties";
+    private static Map<String, String> properties = new HashMap<>();
 
     static {
-        PROPERTIES = ConfigurationLoader.load(REFLECTOR_PROPS_FILENAME);
+        properties = ConfigurationLoader.load(REFLECTOR_PROPS_FILENAME);
     }
 
     public static void withConfigFile(String filename) {
-        PROPERTIES = ConfigurationLoader.load(filename);
+        properties = ConfigurationLoader.load(filename);
     }
 
     public static void withConfigProperty(String property, String value) {
-        PROPERTIES.put(property, value);
+        properties.put(property, value);
     }
 
     public static String getProperty(String key) {
-        return PROPERTIES.get(key);
+        return properties.get(key);
     }
 
     public static String getProperty(String key, String defaultValue) {
@@ -45,7 +46,7 @@ public class Configuration {
     }
 
     public static void setProperty(String key, String value) {
-        PROPERTIES.put(key, value);
+        properties.put(key, value);
     }
 
     // SPECIFIC CONFIGURATION GETTERS

@@ -10,7 +10,7 @@ import java.util.Set;
 public class TestValueSelector {
 
     @Test
-    public void testValueSelectorWithReplacement() {
+    void testValueSelectorWithReplacement() {
         ValueSelector<Integer> selector = new ValueSelector<>(true, Set.of(1, 2, 3, 4, 5));
         Set<Integer> generatedValues = new HashSet<>();
         for (int i = 0; i < 1000; i++) {
@@ -28,7 +28,7 @@ public class TestValueSelector {
     }
 
     @Test
-    public void testValueSelectorWithoutReplacement() {
+    void testValueSelectorWithoutReplacement() {
         ValueSelector<String> selector = new ValueSelector<>(false, Set.of("A", "B", "C"));
         Set<String> uniqueValues = new HashSet<>();
         for (int i = 0; i < 3; i++) {
@@ -51,7 +51,7 @@ public class TestValueSelector {
     }
 
     @Test
-    public void testCommonBehaviors() {
+    void testCommonBehaviors() {
         // Test empty set constructor
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             new ValueSelector<>(true, new HashSet<>());

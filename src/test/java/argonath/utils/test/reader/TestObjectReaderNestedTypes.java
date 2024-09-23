@@ -16,7 +16,7 @@ public class TestObjectReaderNestedTypes {
     }
 
     @Test
-    public void testNestedTypesReader() {
+    void testNestedTypesReader() {
         TestClass testObject = new TestClass();
         testObject.mapWithListSimple = Map.of(
                 "key1", List.of("value1", "value2"),

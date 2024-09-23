@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.*;
 
 public class ClassloaderExplorer {
+    private ClassloaderExplorer() {
+    }
 
     public static Class<?> findClosestImplementation(Class<?> interfaceClass) {
         if (!interfaceClass.isInterface()) {
@@ -54,7 +56,7 @@ public class ClassloaderExplorer {
             }
         } catch (IOException |
                  ClassNotFoundException e) {
-            throw new RuntimeException("Unexpected error while exploring classloader", e);
+            throw new IllegalArgumentException("Unexpected error while exploring classloader", e);
         }
 
         return null; // No implementation found

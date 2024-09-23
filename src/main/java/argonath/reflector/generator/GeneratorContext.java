@@ -1,17 +1,21 @@
 package argonath.reflector.generator;
 
+import argonath.reflector.generator.codelist.CodeList;
+import argonath.reflector.generator.codelist.CodeListItem;
 import argonath.reflector.generator.model.Cardinality;
 import argonath.reflector.generator.model.Generator;
 import argonath.reflector.generator.model.ObjectSpecs;
 import argonath.reflector.generator.model.Optionality;
 import argonath.reflector.reflection.TypeExplorer;
 import argonath.utils.XPathUtil;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class GeneratorContext {
 
@@ -25,10 +29,13 @@ public class GeneratorContext {
 
     private Long seed = null;
 
+    private Map<Pair<String, String>, CodeListItem<?>> currentCodeListItems;
+
     GeneratorContext(Class<?> returnClass, GeneratorConfig config) {
         this.returnClass = returnClass;
         this.config = config;
         this.elements = new Stack<>();
+        this.currentCodeListItems = new HashMap<>();
     }
 
     GeneratorConfig config() {
@@ -46,21 +53,27 @@ public class GeneratorContext {
     String path() {
         List<String> pathElements = elements.stream()
                 .map(Element::pathElementName)
-                .collect(Collectors.toList());
+                .toList();
         return XPathUtil.create(pathElements);
     }
 
+    @SuppressWarnings("java:S1452")
     ObjectSpecs<?> specs() {
         return this.config.specs(curElement, this);
     }
 
+    @SuppressWarnings("java:S1452")
     Generator<?> generator() {
         ObjectSpecs<?> specs = this.config.specs(curElement, this);
         Generator<?> generator = (specs == null) ? null : specs.generator();
-        if (generator == null) {
-            generator = DefaultGeneratorRegistry.generator(curElement.typeClass());
+
+        if (generator != null) {
+            return generator;
         }
-        return generator;
+
+        // even if a Generator is defined, return the default generator in case it is not compatible
+        // this is a solution required while Map generators are not fully customized (key vs. value generator)
+        return DefaultGenerators.generator(curElement.typeClass());
     }
 
     Cardinality cardinality() {
@@ -115,12 +128,28 @@ public class GeneratorContext {
         this.seed = seed;
     }
 
-    Long seed() {
+    public Long seed() {
         return this.seed;
     }
 
     public Element parent() {
         return elements.size() > 1 ? elements.get(elements.size() - 2) : null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> CodeList<T> getCodeList(String key) {
+        return (CodeList<T>) config.getCodeList(key);
+    }
+
+    public <T> void setCurrentCodeListItem(String key, CodeListItem<T> codeListItem) {
+        String parentPath = XPathUtil.parent(path());
+        currentCodeListItems.put(Pair.of(key, parentPath), codeListItem);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> CodeListItem<T> getCurrentCodeListItem(String key) {
+        String parentPath = XPathUtil.parent(path());
+        return (CodeListItem<T>) currentCodeListItems.get(Pair.of(key, parentPath));
     }
 
     static class Element {

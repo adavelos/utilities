@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class TestObjectGeneratorDefaults {
+class TestObjectGeneratorDefaults {
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         Configuration.withConfigFile("default.selector.properties");
     }
 
     @Test
-    public void testGenerateDefault() {
+    void testGenerateDefault() {
         for (int i = 0; i < 100; i++) {
             TestClass generate = ObjectGenerator.create(TestClass.class)
                     .withAllMandatory()
@@ -208,6 +208,10 @@ public class TestObjectGeneratorDefaults {
                     Assertions.assertTrue(strings1 != null && strings1.length >= 1 && strings1.length <= 3);
                 }
             }
+
+            // TestInterfaceField
+            Assertions.assertNotNull(generate.testInterfaceField);
+            Assertions.assertNotNull(generate.testClassWithInterfaceField);
         }
 
     }

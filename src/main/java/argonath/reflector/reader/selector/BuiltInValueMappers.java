@@ -3,6 +3,9 @@ package argonath.reflector.reader.selector;
 import java.util.Map;
 
 class BuiltInValueMappers {
+    private BuiltInValueMappers() {
+    }
+
     static final ValueMapper MAP_KEY_VM = new ValueMapper() {
 
         @Override

@@ -21,8 +21,8 @@ public interface IterableType {
      * Returns an iterable type as a collection. For a collection it is a straight forward cast, but for iterable types
      * it may be different (i.e. for Map it is the entry set).
      */
-    default Collection<?> asCollection(Object object) {
-        return (Collection<?>) object;
+    default Collection asCollection(Object object) {
+        return (Collection) object;
     }
 
     /**

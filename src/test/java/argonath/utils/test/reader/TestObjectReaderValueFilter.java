@@ -15,7 +15,7 @@ public class TestObjectReaderValueFilter {
     }
 
     @Test
-    public void testSingleFilter() {
+    void testSingleFilter() {
         InnerClass innerClass1 = new InnerClass("1", "innerName1");
         InnerClass innerClass2 = new InnerClass("2", "innerName2");
         InnerClass innerClass3 = new InnerClass("3", "innerName3");
@@ -202,14 +202,16 @@ public class TestObjectReaderValueFilter {
         Object set2 = ObjectReader.get(inputObject, "simpleSet[value1,value2]");
         Assertions.assertEquals(Set.of("value1", "value2"), set2);
         List<String> set2_2 = ObjectReader.list(inputObject, "simpleSet[value1,value2]", String.class);
-        Collections.sort(set2_2);
-        Assertions.assertEquals(List.of("value1", "value2"), set2_2);
+        ArrayList<String> set2_2_sorted = new ArrayList<>(set2_2);
+        Collections.sort(set2_2_sorted);
+        Assertions.assertEquals(List.of("value1", "value2"), set2_2_sorted);
 
         Object setWildcard = ObjectReader.get(inputObject, "simpleSet[value*]");
         Assertions.assertEquals(Set.of("value1", "value2", "value3", "value4", "value5"), setWildcard);
         List<String> setWildcard_2 = ObjectReader.list(inputObject, "simpleSet[value*]", String.class);
-        Collections.sort(setWildcard_2);
-        Assertions.assertEquals(List.of("value1", "value2", "value3", "value4", "value5"), setWildcard_2);
+        List<String> setWildcard_2_sorted = new ArrayList<>(setWildcard_2);
+        Collections.sort(setWildcard_2_sorted);
+        Assertions.assertEquals(List.of("value1", "value2", "value3", "value4", "value5"), setWildcard_2_sorted);
 
         Object setWildcard2 = ObjectReader.get(inputObject, "simpleSet[*alue1]");
         Assertions.assertEquals("value1", setWildcard2);
@@ -219,7 +221,9 @@ public class TestObjectReaderValueFilter {
         Object setWildcard3 = ObjectReader.get(inputObject, "simpleSet[*alue*]");
         Assertions.assertEquals(Set.of("value1", "value2", "value3", "value4", "value5"), setWildcard3);
         List<String> setWildcard3_2 = ObjectReader.list(inputObject, "simpleSet[*alue*]", String.class);
-        Collections.sort(setWildcard3_2);
+        List<String> setWildcard3_2_sorted = new ArrayList<>(setWildcard3_2);
+        Collections.sort(setWildcard3_2_sorted);
+        Assertions.assertEquals(List.of("value1", "value2", "value3", "value4", "value5"), setWildcard3_2_sorted);
 
         Object setWildcard4 = ObjectReader.get(inputObject, "simpleSet[*test*]");
         Assertions.assertEquals(Set.of(), setWildcard4);
@@ -245,19 +249,23 @@ public class TestObjectReaderValueFilter {
         Assertions.assertEquals(List.of("value1"), map1_2);
 
         Object map2 = ObjectReader.get(inputObject, "simpleMap[key1,key2]");
-        Collections.sort(((List) map2));
-        Assertions.assertEquals(List.of("value1", "value2"), map2);
+        List map2_sorted = new ArrayList((List) map2); // to sort the list (since map is not ordered
+        Collections.sort(map2_sorted);
+        Assertions.assertEquals(List.of("value1", "value2"), map2_sorted);
 
         List<String> map2_2 = ObjectReader.list(inputObject, "simpleMap[key1,key2]", String.class);
-        Collections.sort((List) map2_2);
-        Assertions.assertEquals(List.of("value1", "value2"), map2_2);
+        List<String> map2_2_sorted = new ArrayList<>(map2_2);
+        Collections.sort(map2_2_sorted);
+        Assertions.assertEquals(List.of("value1", "value2"), map2_2_sorted);
 
         Object mapWildcard = ObjectReader.get(inputObject, "simpleMap[key*]");
-        Collections.sort(((List) mapWildcard));
-        Assertions.assertEquals(List.of("value1", "value2", "value3", "value4", "value5"), mapWildcard);
+        List mapWildcard_sorted = new ArrayList((List) mapWildcard);
+        Collections.sort(mapWildcard_sorted);
+        Assertions.assertEquals(List.of("value1", "value2", "value3", "value4", "value5"), mapWildcard_sorted);
         List<String> mapWildcard_2 = ObjectReader.list(inputObject, "simpleMap[key*]", String.class);
-        Collections.sort(((List) mapWildcard_2));
-        Assertions.assertEquals(List.of("value1", "value2", "value3", "value4", "value5"), mapWildcard_2);
+        List<String> mapWildcard_2_sorted = new ArrayList<>(mapWildcard_2);
+        Collections.sort(mapWildcard_2_sorted);
+        Assertions.assertEquals(List.of("value1", "value2", "value3", "value4", "value5"), mapWildcard_2_sorted);
 
         try {
             ObjectReader.get(inputObject, "simpleMap[value1:value2]");

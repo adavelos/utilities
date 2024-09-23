@@ -50,35 +50,36 @@ public class ReflectiveAccessor {
         try {
             value = f.get(obj);
         } catch (IllegalAccessException ignored) {
+            // no action
         }
         return value;
     }
 
-    public static Boolean isStandardMultiValueClass(Class<?> clazz) {
+    public static boolean isStandardMultiValueClass(Class<?> clazz) {
         return isCollection(clazz) || isArray(clazz) || isMap(clazz);
     }
 
-    public static Boolean isStandardMultiValueClass(Object obj) {
+    public static boolean isStandardMultiValueClass(Object obj) {
         return isCollection(obj) || isArray(obj) || isMap(obj);
     }
 
-    public static Boolean isArrayOrCollection(Object obj) {
+    public static boolean isArrayOrCollection(Object obj) {
         Assert.notNull(obj, "Cannot determine Array/Collection from 'null' Object");
         return isArrayOrCollection(obj.getClass());
     }
 
-    public static Boolean isArrayOrCollection(Class<?> clazz) {
+    public static boolean isArrayOrCollection(Class<?> clazz) {
         Assert.notNull(clazz, "Cannot determine Array/Collection from 'null' Class");
         return isCollection(clazz) || isArray(clazz);
     }
 
-    public static Boolean isArray(Object obj) {
+    public static boolean isArray(Object obj) {
         Assert.notNull(obj, "Cannot determine Array from 'null' Object");
         return isArray(obj.getClass());
     }
 
     // isIterableArray (array not byte[])
-    public static Boolean isIterableArray(Class<?> clazz) {
+    public static boolean isIterableArray(Class<?> clazz) {
         Assert.notNull(clazz, "Cannot determine Array from 'null' Class");
         return clazz.isArray() && !isByteArray(clazz);
     }
@@ -91,7 +92,7 @@ public class ReflectiveAccessor {
         return clazz.getComponentType();
     }
 
-    public static Boolean isArray(Class<?> clazz) {
+    public static boolean isArray(Class<?> clazz) {
         Assert.notNull(clazz, "Cannot determine Array from 'null' Class");
         return clazz.isArray();
     }
@@ -107,22 +108,22 @@ public class ReflectiveAccessor {
         return componentType.isPrimitive();
     }
 
-    public static Boolean isCollection(Object obj) {
+    public static boolean isCollection(Object obj) {
         Assert.notNull(obj, "Cannot determine Collection from 'null' Object");
         return isCollection(obj.getClass());
     }
 
-    public static Boolean isCollection(Class<?> clazz) {
+    public static boolean isCollection(Class<?> clazz) {
         Assert.notNull(clazz, "Cannot determine Collection from 'null' Class");
         return Collection.class.isAssignableFrom(clazz);
     }
 
-    public static Boolean isList(Object obj) {
+    public static boolean isList(Object obj) {
         Assert.notNull(obj, "Cannot determine List from 'null' Object");
         return isList(obj.getClass());
     }
 
-    public static Boolean isList(Class<?> clazz) {
+    public static boolean isList(Class<?> clazz) {
         Assert.notNull(clazz, "Cannot determine List from 'null' Class");
         return List.class.isAssignableFrom(clazz);
     }
@@ -192,7 +193,7 @@ public class ReflectiveAccessor {
         return ret;
     }
 
-    public static List<?> getArrayOrCollectionValues(Object obj) {
+    public static List getArrayOrCollectionValues(Object obj) {
         Assert.notNull(obj, "Cannot get Array/Collection values from 'null' Object");
         Class<?> clazz = obj.getClass();
         List<Object> ret;
@@ -203,7 +204,7 @@ public class ReflectiveAccessor {
             Collection<?> col = (Collection<?>) obj;
             ret = new ArrayList<>(col);
         } else {
-            throw new RuntimeException("Unsupported Class:" + clazz);
+            throw new IllegalArgumentException("Unsupported Class:" + clazz);
         }
         return ret;
     }

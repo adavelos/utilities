@@ -1,0 +1,4 @@
+# adhoc code lists
+CL2=C1(cl2-1-desc),C2(cl2-2-desc), C3(cl2-3-desc), C4(cl2-4-desc)
+CL3=10(cl3-1-desc), 100(cl3-2-desc), 500(cl3-3-desc), 6000(cl3-4-desc)
+CL4= AFE(afe),FTR(ftr),VFF(vff), PO4(p04)

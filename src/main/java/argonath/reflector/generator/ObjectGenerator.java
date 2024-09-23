@@ -9,6 +9,8 @@ import argonath.reflector.reflection.ReflectiveMutator;
 import argonath.reflector.reflection.TypeExplorer;
 import argonath.reflector.types.iterable.IterableType;
 import argonath.reflector.types.iterable.IterableTypes;
+import argonath.reflector.types.simple.SimpleType;
+import argonath.reflector.types.simple.SimpleTypes;
 import argonath.utils.Assert;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -19,6 +21,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class ObjectGenerator {
+    private ObjectGenerator() {
+    }
 
     public static <T> Builder<T> create(Class<T> clazz) {
         return new Builder<>(GeneratorConfig.defaultConfig(), clazz);
@@ -44,23 +48,24 @@ public class ObjectGenerator {
             return null;
         }
         // Instantiate object
-        Object ret = instantiate(element);
+        Object obj = instantiate(element);
 
         // Relate with parent
         Object parent = element.parent();
-        if (parent != null) {
+        if (parent != null && obj != null) {
             Field field = element.field();
             try {
-                ReflectiveMutator.setFieldValue(field, parent, ret);
+                ReflectiveMutator.setFieldValue(field, parent, obj);
             } catch (Exception e) {
                 if (!ctx.config().isLenient()) {
-                    throw new RuntimeException("Cannot set field '" + field.getName() + "' of type: [" + field.getType().getName() + "] to value of type: [" + ret.getClass().getName() + "]");
+                    String path = "Path: " + ctx.path() + " - ";
+                    throw new IllegalArgumentException(path + "Cannot set field '" + field.getName() + "' of type: [" + field.getType().getName() + "] to value of type: [" + obj.getClass().getName() + "]");
                 }
             }
         }
 
         ctx.exit();
-        return ret;
+        return obj;
     }
 
     private static Object instantiate(GeneratorContext.Element element) {
@@ -74,9 +79,8 @@ public class ObjectGenerator {
 
         // Resolution Step 2: Generator specified in Context or in Config
         Generator<?> generator = ctx.generator();
-        Object generatedValue = invokeGenerator(generator, element, ctx);
-        if (generatedValue != null) {
-            return generatedValue;
+        if (isGeneratorApplicable(generator, element)) {
+            return invokeGenerator(generator, ctx);
         }
 
         // Populate Iterable
@@ -96,20 +100,28 @@ public class ObjectGenerator {
         return instantiatedValue;
     }
 
-    private static <T> T invokeGenerator(Generator<T> generator, GeneratorContext.Element element, GeneratorContext ctx) {
+    private static boolean isGeneratorApplicable(Generator<?> generator, GeneratorContext.Element element) {
         if (generator == null) {
-            return null;
+            return false;
         }
 
         Assert.notNull(generator.type(), "Generator type cannot be null: " + generator.getClass());
         if (IterableTypes.isIterableType(element.typeClass()) && !IterableTypes.isIterableType(generator.type())) {
-            // specs for an iterable field: generator returns a single object, so ignore the current level
+            // specs for an iterable field: generator returns a single object, so ignore current level and move deeper
+            return false;
+        }
+
+        return true;
+    }
+
+    private static <T> T invokeGenerator(Generator<T> generator, GeneratorContext ctx) {
+        if (generator == null) {
             return null;
         }
 
         T ret = null;
         try {
-            ret = generator.generate(ctx.config().seed());
+            ret = generator.generate(ctx);
         } catch (IllegalArgumentException e) {
             if (!ctx.config().isLenient()) {
                 throw e;
@@ -135,7 +147,7 @@ public class ObjectGenerator {
 
     private static Object instantiateIterable(GeneratorContext.Element element, IterableType iterableType, GeneratorContext ctx) {
         // Pre-calculate size in case of Array
-        int size = ctx.cardinality().randomSize();
+        int size = ctx.cardinality().randomSize(ctx);
 
         Collection<Object> elements = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -143,6 +155,25 @@ public class ObjectGenerator {
             List<Object> objectList = new ArrayList<>();
             for (Type nestedType : TypeExplorer.nestedTypes(type)) {
                 Object elementInstance = generate(GeneratorContext.Element.ofParam(nestedType, 0, ctx));
+                if (elementInstance == null) {
+                    continue;
+                }
+
+                // After Object Instantiation, detect if there is a String value that needs to be converted to a simple type
+                if (nestedType instanceof Class<?> nestedTypeClass) {
+                    SimpleType<?> simpleType = SimpleTypes.simpleType(nestedTypeClass);
+                    if (simpleType != null && elementInstance instanceof String retStr) {
+                        try {
+                            elementInstance = simpleType.fromString(retStr);
+                        } catch (Exception e) {
+                            if (!ctx.config().isLenient()) {
+                                String path = "Path: " + ctx.path() + " - ";
+                                throw new IllegalArgumentException(path + "Cannot convert string value: [" + retStr + "] to type: [" + element.typeClass().getName() + "]");
+                            }
+                        }
+                    }
+                }
+
                 objectList.add(elementInstance);
             }
             Object item = iterableType.compose(objectList);
@@ -153,7 +184,7 @@ public class ObjectGenerator {
         try {
             ret = iterableType.fromCollection(elements, element.typeClass());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
 
         return ret;
@@ -182,6 +213,10 @@ public class ObjectGenerator {
             return this;
         }
 
+        /**
+         * Add a new Code List file to the configuration.
+         * In case of conflict in Code List keys, the last file added will override the previous ones.
+         */
         public Builder<T> withCodeListFile(String filename) {
             this.config.withCodeListFile(filename);
             return this;

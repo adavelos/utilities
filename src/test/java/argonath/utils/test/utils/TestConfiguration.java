@@ -13,7 +13,7 @@ public class TestConfiguration {
     }
 
     @Test
-    public void testConfigurationFile() {
+    void testConfigurationFile() {
         // default configuration file
         String testValue = Configuration.getProperty("test.property");
         Assertions.assertEquals("default", testValue, "Default configuration file is loaded");
@@ -30,7 +30,7 @@ public class TestConfiguration {
     }
 
     @Test
-    public void testInvalidConfigurationFile() {
+    void testInvalidConfigurationFile() {
         Configuration.withConfigFile("invalid.reflector.properties");
         String testValue = Configuration.getProperty("test.property");
         Assertions.assertNull(testValue, "Invalid configuration file is loaded: no failure, but configuration is empty");

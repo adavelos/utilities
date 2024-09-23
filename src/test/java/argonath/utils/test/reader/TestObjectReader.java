@@ -17,7 +17,7 @@ public class TestObjectReader {
     }
 
     @Test
-    public void testGetObject() {
+    void testGetObject() {
 
         InnerClass innerClass = new InnerClass("innerString", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), List.of("innerFriend1", "innerFriend2"), new byte[]{1, 2, 3});
         List<InnerClass> innerClasses = List.of(

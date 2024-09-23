@@ -8,20 +8,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class StringGenerator {
 
-    final static Pattern RANGE_FRACTION_MATCH = Pattern.compile("n(\\d+).(\\d+)");
+    static final Pattern RANGE_FRACTION_MATCH = Pattern.compile("n(\\d+).(\\d+)");
 
-    final static Pattern VARIABLE_RANGE_FRACTION_MATCH = Pattern.compile("n(\\d+)\\.\\.(\\d+).(\\d+)");
+    static final Pattern VARIABLE_RANGE_FRACTION_MATCH = Pattern.compile("n(\\d+)\\.\\.(\\d+).(\\d+)");
 
-    final static Pattern RANGE_MATCH = Pattern.compile("(a|n|an)\\.\\.(\\d+)");
+    static final Pattern RANGE_MATCH = Pattern.compile("(a|n|an)\\.\\.(\\d+)");
 
-    final static Pattern VARIABLE_RANGE_MATCH = Pattern.compile("(a|n|an)(\\d+)\\.\\.(\\d+)");
+    static final Pattern VARIABLE_RANGE_MATCH = Pattern.compile("(a|n|an)(\\d+)\\.\\.(\\d+)");
 
-    final static Pattern EXACT_MATCH = Pattern.compile("(a|n|an)(\\d+)");
+    static final Pattern EXACT_MATCH = Pattern.compile("(a|n|an)(\\d+)");
 
     public static String randomStringUppercase(String... formats) {
         return randomString(formats).toUpperCase();
@@ -32,19 +31,18 @@ public class StringGenerator {
     }
 
     public static String randomString(List<String> formats) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         formats.forEach(format -> buf.append(generateString(format).toUpperCase()));
         return buf.toString();
     }
 
     public static Long randomLong(String format) {
-        StringBuffer buf = new StringBuffer();
         String str = generateString(format);
         Long ret;
         try {
             ret = Long.valueOf(str);
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Invalid Format:" + format, e);
+            throw new IllegalArgumentException("Invalid Format:" + format, e);
         }
         return ret;
     }
@@ -61,7 +59,7 @@ public class StringGenerator {
     }
 
     public static List<String> randomStringList(int size, String... formats) {
-        return IntStream.range(0, size).boxed().map(item -> randomString(formats)).collect(Collectors.toList());
+        return IntStream.range(0, size).boxed().map(item -> randomString(formats)).toList();
     }
 
     private static String generateString(String format) {
@@ -112,13 +110,12 @@ public class StringGenerator {
                             fmt = variableRangeMatcher.group(1);
                         } else {
                             return format;
-                            //throw new IllegalArgumentException("Invalid Format:" + format);
                         }
                     }
                 }
             }
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Invalid Format:" + format);
+            throw new IllegalArgumentException("Invalid Format:" + format);
         }
 
         if (fmt.contains("a") && format.contains("n")) {
@@ -128,7 +125,7 @@ public class StringGenerator {
         } else if (fmt.contains("n")) {
             ret = generateNumeric(minDigits, maxDigits, fractionDigits);
         } else {
-            throw new RuntimeException("Invalid Format - Cannot Parse" + format);
+            throw new IllegalArgumentException("Invalid Format - Cannot Parse" + format);
         }
 
         return ret;
@@ -159,7 +156,7 @@ public class StringGenerator {
 
     private static String generateString(Integer minDigits, Integer maxDigits, FormatType formatType) {
         Assert.isTrue(maxDigits >= minDigits, "MAX Digits must be greater or equal than MIN Digits");
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         Integer length = RandomNumber.getInteger(minDigits, maxDigits + 1);
         IntStream.range(0, length).forEach(id -> buf.append(generateChar(formatType)));
         return buf.toString();
@@ -175,23 +172,12 @@ public class StringGenerator {
             case ALPHANUMERIC:
                 return randomChar(ALPHANUMERIC_SET);
         }
-        throw new RuntimeException("Invalid Format: Type" + numeric);
+        throw new IllegalArgumentException("Invalid Format: Type" + numeric);
     }
 
     private static char randomChar(String alphaSet) {
         Integer index = RandomNumber.getInteger(0, alphaSet.length());
         return alphaSet.charAt(index);
-    }
-
-    private static Integer getNumber(String format) {
-        String number = format.replaceAll("\\D+", "");
-        Integer ret = null;
-        try {
-            ret = Integer.parseInt(number);
-        } catch (NumberFormatException e) {
-            // preserve null
-        }
-        return ret;
     }
 
     static final String ALPHA_SET = "abcdefghijklmnopqrstuvwxyz";

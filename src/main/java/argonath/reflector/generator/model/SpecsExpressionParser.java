@@ -12,7 +12,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SpecsExpressionParser {
+    private SpecsExpressionParser() {
+    }
 
+    @SuppressWarnings("java:S1452")
     public static Map<String, ObjectSpecs<?>> parseSpecs(String filename) {
         Map<String, String> rawSpecs = ConfigurationLoader.load(filename);
 
@@ -49,30 +52,26 @@ public class SpecsExpressionParser {
         boolean hasGenerator = (parts.length == 3) || (parts.length == 2 && !parts[1].startsWith("size"));
         boolean hasCardinality = parts.length == 3 || (parts.length == 2 && parts[1].startsWith("size"));
 
-        String cardinalityStr = parts.length == 3 ? parts[1] : hasCardinality ? parts[1] : null;
-        String generatorStr = parts.length == 3 ? parts[2] : hasGenerator ? parts[1] : null;
+        String cardinalityStr = (parts.length == 3) ? parts[1] : (hasCardinality ? parts[1] : null);
+        String generatorStr = (parts.length == 3) ? parts[2] : (hasGenerator ? parts[1] : null);
 
         Optionality optionality = parseOptionality(optionalityStr, line);
         Cardinality cardinality = hasCardinality ? parseCardinality(cardinalityStr, line) : null;
-        Generator<?> generatorType = hasGenerator ? parseGenerator(generatorStr, line) : null;
-
-        return new ObjectSpecs(generatorType, optionality, cardinality);
+        Generator<T> generatorType = hasGenerator ? parseGenerator(generatorStr, line) : null;
+        return new ObjectSpecs<>(generatorType, optionality, cardinality);
     }
 
     private static Optionality parseOptionality(String optionalityStr, String line) {
-        switch (optionalityStr) {
-            case "M":
-                return Optionality.MANDATORY;
-            case "O":
-                return Optionality.OPTIONAL;
-            case "N":
-                return Optionality.NEVER;
-            default:
-                throw new IllegalArgumentException("Invalid optionality: " + optionalityStr + " at line: '" + line + "'");
-        }
+        return switch (optionalityStr) {
+            case "M" -> Optionality.MANDATORY;
+            case "O" -> Optionality.OPTIONAL;
+            case "N" -> Optionality.NEVER;
+            default ->
+                    throw new IllegalArgumentException("Invalid optionality: " + optionalityStr + " at line: '" + line + "'");
+        };
     }
 
-    private static Pattern SIZE_PATTERN = Pattern.compile("size\\((\\d+)(?:,\\s*(\\d+))?\\)");
+    private static final Pattern SIZE_PATTERN = Pattern.compile("size\\((\\d+)(?:,\\s*(\\d+))?\\)");
 
     private static Cardinality parseCardinality(String cardinalityStr, String line) {
         Matcher matcher = SIZE_PATTERN.matcher(cardinalityStr);
@@ -92,11 +91,12 @@ public class SpecsExpressionParser {
         }
     }
 
-    private static Generator<?> parseGenerator(String generatorStr, String line) {
+    @SuppressWarnings("unchecked")
+    private static <T> Generator<T> parseGenerator(String generatorStr, String line) {
         int openParen = generatorStr.indexOf('(');
         int closeParen = generatorStr.lastIndexOf(')');
         if (openParen == -1 || closeParen == -1 || closeParen <= openParen) {
-            return Generators.fixedValue(generatorStr.trim());
+            return (Generator<T>) Generators.fixedValue(generatorStr);
         }
         String generatorName = generatorStr.substring(0, openParen);
         Assert.isTrue(generatorName.length() > 0, "Generator name is empty at line: '" + line + "'");
@@ -111,7 +111,7 @@ public class SpecsExpressionParser {
                 args[i] = args[i].trim();
             }
         }
-        GeneratorTemplate generatorSupplier = GeneratorTemplateRegistry.generator(generatorName);
+        GeneratorTemplate<T> generatorSupplier = GeneratorTemplateRegistry.generator(generatorName);
         if (generatorSupplier == null) {
             throw new IllegalArgumentException("Unknown generator: " + generatorName + " at line: '" + line + "'");
         }

@@ -1,6 +1,5 @@
 package argonath.reflector.types.simple;
 
-import argonath.reflector.reflection.ReflectiveAccessor;
 import argonath.reflector.registry.TypeRegistry;
 
 import java.math.BigDecimal;
@@ -10,8 +9,10 @@ import java.time.*;
 import static argonath.reflector.types.simple.BuiltInSimpleTypes.*;
 
 public class SimpleTypes {
+    private SimpleTypes() {
+    }
 
-    private static TypeRegistry<SimpleType> registry = new TypeRegistry<>(true);
+    private static TypeRegistry<SimpleType<?>> registry = new TypeRegistry<>(true);
 
     static {
         registerBuiltInTypes();
@@ -41,15 +42,15 @@ public class SimpleTypes {
         register(byte[].class, BYTE_ARRAY);
     }
 
-    public static SimpleType simpleType(Object object) {
-        return simpleType(object.getClass());
+    public static <T> SimpleType<T> simpleType(T object) {
+        return simpleType((Class<T>) object.getClass());
     }
 
-    public static SimpleType simpleType(Class<?> clazz) {
-        return registry.match(clazz);
+    public static <T> SimpleType<T> simpleType(Class<T> clazz) {
+        return (SimpleType<T>) registry.match(clazz);
     }
 
-    public static boolean isSimpleType(Class<?> clazz) {
+    public static <T> boolean isSimpleType(Class<T> clazz) {
         return simpleType(clazz) != null;
     }
 

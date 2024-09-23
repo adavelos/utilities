@@ -14,7 +14,7 @@ import static argonath.reflector.generator.Generators.randomInt;
 import static argonath.reflector.generator.Generators.randomString;
 import static argonath.reflector.generator.model.ObjectSpecs.generator;
 
-public class TestObjectGeneratorApi {
+class TestObjectGeneratorApi {
     /*
         - Selectors variances
         - with Specs
@@ -25,7 +25,7 @@ public class TestObjectGeneratorApi {
      */
 
     @Test
-    public void testWithSpecsWithAllMandatory() {
+    void testWithSpecsWithAllMandatory() {
         Outer obj = ObjectGenerator.create(Outer.class)
                 .withAllMandatory()
                 .withSpecs(ofPath("/intField"), generator(Integer.class, randomInt(1000, 1010)).mandatory())
@@ -33,7 +33,18 @@ public class TestObjectGeneratorApi {
                 .withSpecs(ofPath("/intArray"), ObjectSpecs.generator(Integer.class, randomInt(2000, 2010)).size(10, 12))
                 .withSpecs(ofPath("/stringArray"), ObjectSpecs.generator(String.class, randomString("an12")).size(20, 24))
                 .withSpecs(ofPath("/stringList"), ObjectSpecs.generator(String.class, randomString("an12")).size(30, 34))
+                .withSpecs(ofPath("/stringMap"), ObjectSpecs.create(String.class).generator(randomString("an10")).size(5, 10))
+                .withSpecs(ofPath("/intList"), ObjectSpecs.generator(Integer.class, randomInt(100, 110)).mandatory().size(5, 10))
+                .withSpecs(ofPath("/intMap"), ObjectSpecs.create(Integer.class).generator(randomInt(300, 410)).size(3,5))
                 .ignore(ofPath("/toBeIgnored")) // not applicable since withAllMandatory is set
+
+                // inner list
+                .withSpecs(ofPath("/innerList"), ObjectSpecs.size(Inner.class, 3, 5))
+                .withSpecs(ofPath("/innerList/intField"), generator(Integer.class, randomInt(1000, 1010)).mandatory())
+                .withSpecs(ofPath("/innerList/stringField"), generator(String.class, randomString("an12")).mandatory())
+                .withSpecs(ofPath("/innerList/intArray"), ObjectSpecs.generator(Integer.class, randomInt(2000, 2010)).mandatory().size(10, 12))
+                .withSpecs(ofPath("/innerList/stringArray"), ObjectSpecs.generator(String.class, randomString("an12")).mandatory().size(20, 24))
+                .withSpecs(ofPath("/innerList/stringList"), ObjectSpecs.generator(String.class, randomString("an12")).mandatory().size(30, 34))
 
                 // inner class
                 .withSpecs(ofPath("/inner"), ObjectSpecs.create(Inner.class).mandatory())
@@ -48,7 +59,7 @@ public class TestObjectGeneratorApi {
         // Outer
         Assertions.assertNotNull(obj);
         Assertions.assertTrue(obj.intField >= 1000 && obj.intField < 1010);
-        Assertions.assertTrue(obj.stringField.length() == 12);
+        Assertions.assertEquals(12, obj.stringField.length());
         Assertions.assertTrue(obj.intArray.length >= 10 && obj.intArray.length <= 12);
         Assertions.assertTrue(obj.stringArray.length >= 20 && obj.stringArray.length <= 24);
         Assertions.assertTrue(obj.stringList.size() >= 30 && obj.stringList.size() <= 34);
@@ -56,16 +67,49 @@ public class TestObjectGeneratorApi {
         // Inner
         Assertions.assertNotNull(obj.inner);
         Assertions.assertTrue(obj.inner.intField >= 1000 && obj.inner.intField < 1010);
-        Assertions.assertTrue(obj.inner.stringField.length() == 12);
+        Assertions.assertEquals(12, obj.inner.stringField.length());
         Assertions.assertTrue(obj.inner.intArray.length >= 10 && obj.inner.intArray.length <= 12);
         Assertions.assertTrue(obj.inner.stringArray.length >= 20 && obj.inner.stringArray.length <= 24);
         Assertions.assertTrue(obj.inner.stringList.size() >= 30 && obj.inner.stringList.size() <= 34);
+
+        // inner/intList is populated since withAllMandatory is used
+        Assertions.assertNotNull(obj.inner.intList);
+        Assertions.assertTrue(obj.inner.intList.size() >= 0 && obj.inner.intList.size() <= 10);
+
+        // StringMap
+        Assertions.assertNotNull(obj.stringMap);
+        Assertions.assertTrue(obj.stringMap.size() >= 0 && obj.stringMap.size() <= 10);
+        Assertions.assertTrue(obj.stringMap.values().stream().allMatch(s -> s.length() == 10));
+        Assertions.assertTrue(obj.stringMap.keySet().stream().allMatch(s -> s instanceof String));
+        Assertions.assertTrue(obj.stringMap.values().stream().allMatch(s -> s instanceof String));
+
+        // intList
+        Assertions.assertNotNull(obj.intList);
+        Assertions.assertTrue(obj.intList.size() >= 5 && obj.intList.size() <= 10);
+        Assertions.assertTrue(obj.intList.stream().allMatch(i -> i >= 100 && i < 110));
+
+        // intMap
+        Assertions.assertNotNull(obj.intMap);
+        Assertions.assertTrue(obj.intMap.size() >= 3 && obj.intMap.size() <= 5);
+        Assertions.assertTrue(obj.intMap.values().stream().allMatch(i -> i >= 300 && i < 410));
+
+        // innerList
+        Assertions.assertNotNull(obj.innerList);
+        Assertions.assertTrue(obj.innerList.size() >= 3 && obj.innerList.size() <= 5);
+
+        for (Inner inner : obj.innerList) {
+            Assertions.assertTrue(inner.intField >= 1000 && inner.intField < 1010);
+            Assertions.assertEquals(12, inner.stringField.length());
+            Assertions.assertTrue(inner.intArray.length >= 10 && inner.intArray.length <= 12);
+            Assertions.assertTrue(inner.stringArray.length >= 20 && inner.stringArray.length <= 24);
+            Assertions.assertTrue(inner.stringList.size() >= 30 && inner.stringList.size() <= 34);
+        }
 
     }
 
     // Similar but not with all mandatory. before assertions check if object null
     @Test
-    public void testWithSpecsWithAllOptional() {
+    void testWithSpecsWithAllOptional() {
         for (int i = 0; i < 10; i++) {
             Outer obj = ObjectGenerator.create(Outer.class)
                     .withSpecs(ofPath("/intField"), generator(Integer.class, randomInt(1000, 1010)))
@@ -89,11 +133,10 @@ public class TestObjectGeneratorApi {
             Assertions.assertNotNull(obj);
 
             if (obj != null) {
-                Assertions.assertNotNull(obj.intField);
                 Assertions.assertTrue(obj.intField >= 1000 && obj.intField < 1010);
 
                 //explicitly set to mandatory
-                Assertions.assertTrue(obj.stringField.length() == 12);
+                Assertions.assertEquals(12, obj.stringField.length());
 
                 if (obj.intArray != null) {
                     Assertions.assertTrue(obj.intArray.length >= 10 && obj.intArray.length <= 12);
@@ -108,10 +151,9 @@ public class TestObjectGeneratorApi {
                 Assertions.assertNull(obj.innerNone);
 
                 if (obj.inner != null) {
-                    Assertions.assertNotNull(obj.inner.intField);
                     Assertions.assertTrue(obj.inner.intField >= 1000 && obj.inner.intField < 1010);
                     if (obj.inner.stringField != null) {
-                        Assertions.assertTrue(obj.inner.stringField.length() == 12);
+                        Assertions.assertEquals(12, obj.inner.stringField.length());
                     }
                     if (obj.inner.intArray != null) {
                         Assertions.assertTrue(obj.inner.intArray.length >= 10 && obj.inner.intArray.length <= 12);
@@ -128,7 +170,7 @@ public class TestObjectGeneratorApi {
     }
 
     @Test
-    public void testWithValues() {
+    void testWithValues() {
         Outer obj = ObjectGenerator.create(Outer.class)
                 .withValue(ofPath("/intField"), 1005)
                 .withValue(ofPath("/stringField"), "abcdefghijkl")
@@ -164,7 +206,7 @@ public class TestObjectGeneratorApi {
     }
 
     @Test
-    public void testWithValues2() {
+    void testWithValues2() {
 
         Inner inner = ObjectGenerator.create(Inner.class)
                 .withValue(ofPath("/intField"), 1008)
@@ -205,7 +247,7 @@ public class TestObjectGeneratorApi {
     }
 
     @Test
-    public void testValueOverridesSpecs() {
+    void testValueOverridesSpecs() {
         Outer obj = ObjectGenerator.create(Outer.class)
                 .withSpecs(ofPath("/intField"), generator(Integer.class, randomInt(90, 100)))
                 .withValue(ofPath("/intField"), 50)

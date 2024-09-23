@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
  * Utility class that provides support for parsing / creating XPath expressions
  */
 public class XPathUtil {
+    private XPathUtil() {
+    }
     private static final String SEP = "/";
     private static final String ROOT = "/";
 
@@ -90,7 +92,7 @@ public class XPathUtil {
         String[] splitElements = canonicalPath(xpath).split(SEP);
         return Arrays.stream(splitElements)
                 .filter(StringUtils::isNotEmpty)
-                .collect(Collectors.toList());
+                .toList();
 
     }
 
@@ -151,5 +153,16 @@ public class XPathUtil {
     public static String combine(List<String> elements) {
         String merged = elements.stream().collect(Collectors.joining(SEP, "/", ""));
         return canonicalPath(merged);
+    }
+
+    public static String parent(String path) {
+        List<String> elements = split(path);
+        if (elements.size() == 1) {
+            return ROOT;
+        }
+        if (elements.isEmpty()) {
+            return null;
+        }
+        return create(elements.subList(0, elements.size() - 1));
     }
 }

@@ -6,42 +6,41 @@ public class ObjectSpecs<T> {
     private Optionality optionality;
     private Cardinality cardinality;
 
-    private ObjectSpecs() {
+    private Class<T> typeClass;
+
+    private ObjectSpecs(Class<T> typeClass) {
         this.generator = null;
         this.optionality = Optionality.defaultValue();
         this.cardinality = Cardinality.DEFAULT;
+        this.typeClass = typeClass;
     }
 
-    ObjectSpecs(Generator<?> generator, Optionality optional, Cardinality cardinality) {
-        this.generator = (Generator<T>) generator;
+    ObjectSpecs(Class<T> typeClass, Generator<T> generator, Optionality optional, Cardinality cardinality) {
+        this.generator = generator;
         this.optionality = optional;
         this.cardinality = cardinality;
+        this.typeClass = typeClass;
+    }
+
+    ObjectSpecs(Generator<T> generator, Optionality optional, Cardinality cardinality) {
+        this.generator = generator;
+        this.optionality = optional;
+        this.cardinality = cardinality;
+        this.typeClass = generator != null ? generator.type() : null;
     }
 
     // Builders
 
     public static <T> ObjectSpecs<T> create(Class<T> typeClass) {
-        return new ObjectSpecs<>();
+        return new ObjectSpecs<>(typeClass);
     }
 
     public static <T> ObjectSpecs<T> generator(Class<T> typeClass, Generator<T> generator) {
-        return create(typeClass).generator(generator);
+        return new ObjectSpecs<>(typeClass, generator, Optionality.defaultValue(), Cardinality.DEFAULT);
     }
 
     public static <T> ObjectSpecs<T> size(Class<T> typeClass, int minSize, int maxSize) {
-        return create(typeClass).size(minSize, maxSize);
-    }
-
-    public static <T> ObjectSpecs<T> distribution(Class<T> typeClass, Generator<Integer> distribution) {
-        return create(typeClass).distribution(distribution);
-    }
-
-    public static <T> ObjectSpecs<T> mandatory(Class<T> typeClass) {
-        return create(typeClass).mandatory();
-    }
-
-    public static <T> ObjectSpecs<T> optional(Class<T> typeClass) {
-        return create(typeClass).optional();
+        return new ObjectSpecs<>(typeClass, null, Optionality.defaultValue(), new Cardinality(minSize, maxSize));
     }
 
     // Chainable methods
@@ -93,11 +92,11 @@ public class ObjectSpecs<T> {
         return cardinality;
     }
 
-    public static ObjectSpecs<?> merge(ObjectSpecs<?> curSpecs, ObjectSpecs<?> specs) {
-        Generator<?> generator = specs.generator != null ? specs.generator : curSpecs.generator;
+    public static <T> ObjectSpecs<T> merge(ObjectSpecs<T> curSpecs, ObjectSpecs<T> specs) {
+        Generator<T> generator = specs.generator != null ? specs.generator : curSpecs.generator;
         Optionality optional = specs.optionality != null ? specs.optionality : curSpecs.optionality;
         Cardinality cardinality = specs.cardinality != null ? specs.cardinality : curSpecs.cardinality;
-        return new ObjectSpecs<>(generator, optional, cardinality);
+        return new ObjectSpecs<>(specs.typeClass, generator, optional, cardinality);
     }
 
 }

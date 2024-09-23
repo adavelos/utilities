@@ -59,8 +59,8 @@ public class TypeRegistry<T> {
         distances.entrySet().forEach(entry -> {
             Class<?> ancestor = entry.getKey();
             int distance = entry.getValue();
-            SortedSet<Descendant> descendants = this.descendants.computeIfAbsent(ancestor, k -> new TreeSet<>());
-            descendants.add(new Descendant(type, distance));
+            SortedSet<Descendant> localDescenands = this.descendants.computeIfAbsent(ancestor, k -> new TreeSet<>());
+            localDescenands.add(new Descendant(type, distance));
         });
     }
 
@@ -115,11 +115,11 @@ public class TypeRegistry<T> {
             return exactMatch;
         }
 
-        SortedSet<Descendant> descendants = this.descendants.get(type);
-        if (descendants == null || descendants.isEmpty()) {
+        SortedSet<Descendant> localDescendants = this.descendants.get(type);
+        if (localDescendants == null || localDescendants.isEmpty()) {
             return null;
         }
-        return registry.get(descendants.first().descendantClass);
+        return registry.get(localDescendants.first().descendantClass);
     }
 
     private class Descendant implements Comparable<Descendant> {

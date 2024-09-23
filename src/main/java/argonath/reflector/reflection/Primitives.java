@@ -3,6 +3,8 @@ package argonath.reflector.reflection;
 import java.lang.reflect.Array;
 
 public class Primitives {
+    private Primitives() {
+    }
 
     public static Class<?> getWrapperType(Class<?> primitiveType) {
         if (primitiveType == int.class) return Integer.class;

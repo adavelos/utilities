@@ -8,10 +8,10 @@ import argonath.reflector.generator.model.ObjectSpecs;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestSequenceGenerators {
+class TestSequenceGenerators {
 
     @Test
-    public void testSequenceGenerators() {
+    void testSequenceGenerators() {
 
         // register local generator at: /a and at /innerClass/a
         // register global generator "key1" at /b and at /innerClass/b
@@ -68,7 +68,7 @@ public class TestSequenceGenerators {
     }
 
     @Test
-    public void testSequenceGeneratorsWithDifferentStartsAndSteps() {
+    void testSequenceGeneratorsWithDifferentStartsAndSteps() {
         Generator<Integer> gen1 = Generators.sequence(10, 5);
         Generator<Integer> gen2 = Generators.sequence(1000, 100);
         TestClass obj = ObjectGenerator.create(TestClass.class)

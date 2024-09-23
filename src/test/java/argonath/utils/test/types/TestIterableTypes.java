@@ -19,21 +19,21 @@ public class TestIterableTypes {
     }
 
     @Test
-    public void testIterableType() {
+    void testIterableType() {
         assertNotNull(IterableTypes.iterableType(List.class));
         assertNotNull(IterableTypes.iterableType(Set.class));
         assertNull(IterableTypes.iterableType(String.class));
     }
 
     @Test
-    public void testIsIterableType() {
+    void testIsIterableType() {
         assertTrue(IterableTypes.isIterableType(List.class));
         assertTrue(IterableTypes.isIterableType(Set.class));
         assertFalse(IterableTypes.isIterableType(String.class));
     }
 
     @Test
-    public void testAsCollection() {
+    void testAsCollection() {
         Collection<?> collection = IterableTypes.asCollection(new ArrayList<>(), List.class);
         assertTrue(collection instanceof Collection);
 

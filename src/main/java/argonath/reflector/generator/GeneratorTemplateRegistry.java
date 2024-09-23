@@ -3,6 +3,9 @@ package argonath.reflector.generator;
 import argonath.reflector.generator.model.GeneratorTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,198 +16,230 @@ import static argonath.reflector.generator.Generators.*;
  */
 
 public class GeneratorTemplateRegistry {
+    private GeneratorTemplateRegistry() {
+    }
 
-    private static Map<String, GeneratorTemplate> generatorRegistry = new HashMap<>();
+    private static Map<String, GeneratorTemplate<?>> generatorRegistry = new HashMap<>();
+
+    // Constants for generator names
+    public static final String RANDOM_STRING = "randomString";
+    public static final String RANDOM_INT = "randomInt";
+    public static final String RANDOM_SHORT = "randomShort";
+    public static final String RANDOM_BYTE = "randomByte";
+    public static final String RANDOM_CHAR = "randomChar";
+    public static final String RANDOM_LONG = "randomLong";
+    public static final String RANDOM_DOUBLE = "randomDouble";
+    public static final String RANDOM_FLOAT = "randomFloat";
+    public static final String RANDOM_BIG_INTEGER = "randomBigInteger";
+    public static final String RANDOM_BIG_DECIMAL = "randomBigDecimal";
+    public static final String RANDOM_BOOLEAN = "randomBoolean";
+    public static final String RANDOM_LOCAL_DATE = "randomLocalDate";
+    public static final String RANDOM_LOCAL_DATE_TIME = "randomLocalDateTime";
+    public static final String RANDOM_OFFSET_DATE_TIME = "randomOffsetDateTime";
+    public static final String RANDOM_OFFSET_TIME = "randomOffsetTime";
+    public static final String RANDOM_ZONED_DATE_TIME = "randomZonedDateTime";
+    public static final String RANDOM_BYTE_ARRAY = "randomByteArray";
+    public static final String NOW = "now";
+    public static final String TODAY = "today";
+    public static final String LOREM_IPSUM = "loremIpsum";
+    public static final String SEQUENCE = "sequence";
+    public static final String VALUE_SELECTOR = "valueSelector";
+    public static final String ENUM_SELECTOR = "enumSelector";
+    public static final String CODE_LIST = "codeList";
+    public static final String CODE_LIST_DESCRIPTION = "codeListDescription";
+
+    @SuppressWarnings("unchecked")
+    public static <T> GeneratorTemplate<T> generator(String name) {
+        return (GeneratorTemplate<T>) generatorRegistry.get(name);
+    }
 
     static {
         registerBuiltinGenerators();
     }
 
-    public static GeneratorTemplate generator(String name) {
-        return generatorRegistry.get(name);
-    }
-
     private static void registerBuiltinGenerators() {
-        generatorRegistry.put("randomString", randomStringTemplate());
-        generatorRegistry.put("randomInt", randomIntTemplate());
-        generatorRegistry.put("randomShort", randomShortTemplate());
-        generatorRegistry.put("randomByte", randomByteTemplate());
-        generatorRegistry.put("randomChar", randomCharTemplate());
-        generatorRegistry.put("randomLong", randomLongTemplate());
-        generatorRegistry.put("randomDouble", randomDoubleTemplate());
-        generatorRegistry.put("randomFloat", randomFloatTemplate());
-        generatorRegistry.put("randomBigInteger", randomBigIntegerTemplate());
-        generatorRegistry.put("randomBigDecimal", randomBigDecimalTemplate());
-        generatorRegistry.put("randomBoolean", randomBooleanTemplate());
-        generatorRegistry.put("randomLocalDate", randomLocalDateTemplate());
-        generatorRegistry.put("randomLocalDateTime", randomLocalDateTimeTemplate());
-        generatorRegistry.put("randomOffsetDateTime", randomOffsetDateTimeTemplate());
-        generatorRegistry.put("randomOffsetTime", randomOffsetTimeTemplate());
-        generatorRegistry.put("randomZonedDateTime", randomZonedDateTimeTemplate());
-        generatorRegistry.put("randomByteArray", randomByteArrayTemplate());
-        generatorRegistry.put("now", nowTemplate());
-        generatorRegistry.put("today", todayTemplate());
-        generatorRegistry.put("loremIpsum", loremIpsumTemplate());
-        generatorRegistry.put("sequence", sequenceTemplate());
-        generatorRegistry.put("valueSelector", valueSelectorTemplate());
-        generatorRegistry.put("enumSelector", enumSelectorTemplate());
+        generatorRegistry.put(RANDOM_STRING, randomStringTemplate());
+        generatorRegistry.put(RANDOM_INT, randomIntTemplate());
+        generatorRegistry.put(RANDOM_SHORT, randomShortTemplate());
+        generatorRegistry.put(RANDOM_BYTE, randomByteTemplate());
+        generatorRegistry.put(RANDOM_CHAR, randomCharTemplate());
+        generatorRegistry.put(RANDOM_LONG, randomLongTemplate());
+        generatorRegistry.put(RANDOM_DOUBLE, randomDoubleTemplate());
+        generatorRegistry.put(RANDOM_FLOAT, randomFloatTemplate());
+        generatorRegistry.put(RANDOM_BIG_INTEGER, randomBigIntegerTemplate());
+        generatorRegistry.put(RANDOM_BIG_DECIMAL, randomBigDecimalTemplate());
+        generatorRegistry.put(RANDOM_BOOLEAN, randomBooleanTemplate());
+        generatorRegistry.put(RANDOM_LOCAL_DATE, randomLocalDateTemplate());
+        generatorRegistry.put(RANDOM_LOCAL_DATE_TIME, randomLocalDateTimeTemplate());
+        generatorRegistry.put(RANDOM_OFFSET_DATE_TIME, randomOffsetDateTimeTemplate());
+        generatorRegistry.put(RANDOM_OFFSET_TIME, randomOffsetTimeTemplate());
+        generatorRegistry.put(RANDOM_ZONED_DATE_TIME, randomZonedDateTimeTemplate());
+        generatorRegistry.put(RANDOM_BYTE_ARRAY, randomByteArrayTemplate());
+        generatorRegistry.put(NOW, nowTemplate());
+        generatorRegistry.put(TODAY, todayTemplate());
+        generatorRegistry.put(LOREM_IPSUM, loremIpsumTemplate());
+        generatorRegistry.put(SEQUENCE, sequenceTemplate());
+        generatorRegistry.put(VALUE_SELECTOR, valueSelectorTemplate());
+        generatorRegistry.put(ENUM_SELECTOR, enumSelectorTemplate());
+        generatorRegistry.put(CODE_LIST, codeListTemplate());
+        generatorRegistry.put(CODE_LIST_DESCRIPTION, codeListDescriptionTemplate());
     }
 
-    private static GeneratorTemplate randomStringTemplate() {
-        return (args) -> {
-            String randomString = parseString(args, 0, "randomString");
+    private static GeneratorTemplate<String> randomStringTemplate() {
+        return args -> {
+            String randomString = parseString(args, 0, RANDOM_STRING);
             return randomString(randomString);
         };
     }
 
-    private static GeneratorTemplate randomIntTemplate() {
-        return (args) -> {
-            Pair<Integer, Integer> range = parseIntRange(args, "randomInt");
+    private static GeneratorTemplate<Integer> randomIntTemplate() {
+        return args -> {
+            Pair<Integer, Integer> range = parseIntRange(args, RANDOM_INT);
             return randomInt(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomShortTemplate() {
-        return (args) -> {
-            Pair<Short, Short> range = parseShortRange(args, "randomShort");
+    private static GeneratorTemplate<Short> randomShortTemplate() {
+        return args -> {
+            Pair<Short, Short> range = parseShortRange(args, RANDOM_SHORT);
             return randomShort(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomByteTemplate() {
-        return (args) -> {
-            Pair<Byte, Byte> range = parseByteRange(args, "randomByte");
+    private static GeneratorTemplate<Byte> randomByteTemplate() {
+        return args -> {
+            Pair<Byte, Byte> range = parseByteRange(args, RANDOM_BYTE);
             return randomByte(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomCharTemplate() {
-        return (args) -> {
-            Pair<Character, Character> range = parseCharRange(args, "randomChar");
+    private static GeneratorTemplate<Character> randomCharTemplate() {
+        return args -> {
+            Pair<Character, Character> range = parseCharRange(args, RANDOM_CHAR);
             return randomCharacter(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomLongTemplate() {
-        return (args) -> {
-            Pair<Long, Long> range = parseLongRange(args, "randomLong");
+    private static GeneratorTemplate<Long> randomLongTemplate() {
+        return args -> {
+            Pair<Long, Long> range = parseLongRange(args, RANDOM_LONG);
             return randomLong(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomDoubleTemplate() {
-        return (args) -> {
-            Pair<Double, Double> range = parseDoubleRange(args, "randomDouble");
+    private static GeneratorTemplate<Double> randomDoubleTemplate() {
+        return args -> {
+            Pair<Double, Double> range = parseDoubleRange(args, RANDOM_DOUBLE);
             return randomDouble(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomFloatTemplate() {
-        return (args) -> {
-            Pair<Float, Float> range = parseFloatRange(args, "randomFloat");
+    private static GeneratorTemplate<Float> randomFloatTemplate() {
+        return args -> {
+            Pair<Float, Float> range = parseFloatRange(args, RANDOM_FLOAT);
             return randomFloat(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomBigIntegerTemplate() {
-        return (args) -> {
-            Pair<Long, Long> range = parseLongRange(args, "randomBigInteger");
+    private static GeneratorTemplate<BigInteger> randomBigIntegerTemplate() {
+        return args -> {
+            Pair<Long, Long> range = parseLongRange(args, RANDOM_BIG_INTEGER);
             return randomBigInteger(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomBigDecimalTemplate() {
-        return (args) -> {
-            Pair<Double, Double> range = parseDoubleRange(args, "randomBigDecimal");
+    private static GeneratorTemplate<BigDecimal> randomBigDecimalTemplate() {
+        return args -> {
+            Pair<Double, Double> range = parseDoubleRange(args, RANDOM_BIG_DECIMAL);
             return randomBigDecimal(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomBooleanTemplate() {
-        return (args) -> randomBoolean();
+    private static GeneratorTemplate<Boolean> randomBooleanTemplate() {
+        return args -> randomBoolean();
     }
 
-    private static GeneratorTemplate randomLocalDateTemplate() {
-        return (args) -> {
-            Pair<Integer, Integer> range = parseIntRange(args, "randomLocalDate");
+    private static GeneratorTemplate<LocalDate> randomLocalDateTemplate() {
+        return args -> {
+            Pair<Integer, Integer> range = parseIntRange(args, RANDOM_LOCAL_DATE);
             return randomLocalDate(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomLocalDateTimeTemplate() {
-        return (args) -> {
-            Pair<Integer, Integer> range = parseIntRange(args, "randomLocalDateTime");
+    private static GeneratorTemplate<LocalDateTime> randomLocalDateTimeTemplate() {
+        return args -> {
+            Pair<Integer, Integer> range = parseIntRange(args, RANDOM_LOCAL_DATE_TIME);
             return randomLocalDateTime(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomOffsetDateTimeTemplate() {
-        return (args) -> {
-            Pair<Integer, Integer> range = parseIntRange(args, "randomOffsetDateTime");
+    private static GeneratorTemplate<OffsetDateTime> randomOffsetDateTimeTemplate() {
+        return args -> {
+            Pair<Integer, Integer> range = parseIntRange(args, RANDOM_OFFSET_DATE_TIME);
             return randomOffsetDateTime(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomOffsetTimeTemplate() {
-        return (args) -> {
-            Pair<Integer, Integer> range = parseIntRange(args, "randomOffsetTime");
+    private static GeneratorTemplate<OffsetTime> randomOffsetTimeTemplate() {
+        return args -> {
+            Pair<Integer, Integer> range = parseIntRange(args, RANDOM_OFFSET_TIME);
             return randomOffsetTime(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomZonedDateTimeTemplate() {
-        return (args) -> {
-            Pair<Integer, Integer> range = parseIntRange(args, "randomZonedDateTime");
+    private static GeneratorTemplate<ZonedDateTime> randomZonedDateTimeTemplate() {
+        return args -> {
+            Pair<Integer, Integer> range = parseIntRange(args, RANDOM_ZONED_DATE_TIME);
             return randomZonedDateTime(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate randomByteArrayTemplate() {
-        return (args) -> {
-            Pair<Integer, Integer> range = parseIntRange(args, "randomByteArray");
+    private static GeneratorTemplate<byte[]> randomByteArrayTemplate() {
+        return args -> {
+            Pair<Integer, Integer> range = parseIntRange(args, RANDOM_BYTE_ARRAY);
             return randomByteArray(range.getLeft(), range.getRight());
         };
     }
 
-    private static GeneratorTemplate nowTemplate() {
-        return (args) -> now();
+    private static GeneratorTemplate<LocalDateTime> nowTemplate() {
+        return args -> now();
     }
 
-    private static GeneratorTemplate todayTemplate() {
-        return (args) -> today();
+    private static GeneratorTemplate<LocalDate> todayTemplate() {
+        return args -> today();
     }
 
-    private static GeneratorTemplate loremIpsumTemplate() {
-        return (args) -> {
-            int minSize = parseInt(args, 0, "loremIpsum");
+    private static GeneratorTemplate<String> loremIpsumTemplate() {
+        return args -> {
+            int minSize = parseInt(args, 0, LOREM_IPSUM);
             if (args.length == 1) {
                 return loremIpsum(minSize);
             }
-            int maxSize = parseInt(args, 1, "loremIpsum");
+            int maxSize = parseInt(args, 1, LOREM_IPSUM);
             return loremIpsum(minSize, maxSize);
         };
     }
 
-    private static GeneratorTemplate sequenceTemplate() {
-        return (args) -> {
-            int start = parseInt(args, 0, "sequence");
-            int step = parseInt(args, 1, "sequence");
+    private static GeneratorTemplate<Integer> sequenceTemplate() {
+        return args -> {
+            int start = parseInt(args, 0, SEQUENCE);
+            int step = parseInt(args, 1, SEQUENCE);
             return sequence(start, step);
         };
     }
 
-    private static GeneratorTemplate valueSelectorTemplate() {
-        return (args) -> {
-            boolean allowDuplicates = parseBoolean(args, 0, "valueSelector");
+    private static GeneratorTemplate<String> valueSelectorTemplate() {
+        return args -> {
+            boolean allowDuplicates = parseBoolean(args, 0, VALUE_SELECTOR);
             String[] values = parseVarargs(args, 1);
             return valueSelector(allowDuplicates, values);
         };
     }
 
-    private static GeneratorTemplate enumSelectorTemplate() {
-        return (args) -> {
-            Class<? extends Enum> enumClass = parseEnum(args, 0, "enumSelector");
-            boolean allowDuplicates = parseBoolean(args, 1, "enumSelector");
+    private static GeneratorTemplate<? extends Enum> enumSelectorTemplate() {
+        return args -> {
+            Class<? extends Enum> enumClass = parseEnum(args, 0, ENUM_SELECTOR);
+            boolean allowDuplicates = parseBoolean(args, 1, ENUM_SELECTOR);
             return enumValueSelector(enumClass, allowDuplicates);
         };
     }
@@ -419,6 +454,21 @@ public class GeneratorTemplateRegistry {
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Invalid enum class: " + strVal);
         }
+    }
+
+    private static GeneratorTemplate<String> codeListTemplate() {
+        return args -> {
+            String codeListName = parseString(args, 0, CODE_LIST);
+            boolean withReplacement = parseBoolean(args, 1, CODE_LIST);
+            return codeListValue(String.class, codeListName, withReplacement);
+        };
+    }
+
+    private static GeneratorTemplate<String> codeListDescriptionTemplate() {
+        return args -> {
+            String codeListName = parseString(args, 0, CODE_LIST_DESCRIPTION);
+            return codeListDescription(codeListName);
+        };
     }
 
 }

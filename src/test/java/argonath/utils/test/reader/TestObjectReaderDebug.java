@@ -17,7 +17,7 @@ public class TestObjectReaderDebug {
     }
 
     @Test
-    public void testGetObject() {
+    void testGetObject() {
 
         TestClass testClass = new TestClass();
         testClass.otherList.add("test");

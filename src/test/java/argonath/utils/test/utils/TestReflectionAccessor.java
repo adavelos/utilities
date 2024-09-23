@@ -1,8 +1,8 @@
 package argonath.utils.test.utils;
 
 import argonath.reflector.config.Configuration;
-import argonath.reflector.types.simple.SimpleTypes;
 import argonath.reflector.reflection.ReflectiveAccessor;
+import argonath.reflector.types.simple.SimpleTypes;
 import argonath.utils.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TestReflectionAccessor {
+class TestReflectionAccessor {
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         Configuration.withConfigFile("reflector.properties");
     }
 
     @Test
-    public void testAccessor() {
+    void testAccessor() {
 
         Assertions.assertTrue(ReflectiveAccessor.isCollection(List.class), "List is a collection");
         Assertions.assertFalse(ReflectiveAccessor.isCollection(String.class), "String is not a collection");
@@ -69,9 +69,11 @@ public class TestReflectionAccessor {
         Assertions.assertEquals(name, String.class, "Generic type of field 'friends' is String");
 
         // test getArrayOrCollectionValues
-        String values = ReflectiveAccessor.getArrayOrCollectionValues(List.of(1, 2, 3)).stream().map(Object::toString).collect(Collectors.joining(","));
+        List<?> arrayOrCollectionValues = ReflectiveAccessor.getArrayOrCollectionValues(List.of(1, 2, 3));
+        String values = arrayOrCollectionValues.stream().map(Object::toString).collect(Collectors.joining(","));
         Assertions.assertEquals("1,2,3", values, "Values of List(1, 2, 3) are 1, 2, 3");
-        values = ReflectiveAccessor.getArrayOrCollectionValues(new Integer[]{1, 2, 3}).stream().map(Object::toString).collect(Collectors.joining(","));
+        List<?> arrayOrCollectionValues2 = ReflectiveAccessor.getArrayOrCollectionValues(new Integer[]{1, 2, 3});
+        values = arrayOrCollectionValues2.stream().map(Object::toString).collect(Collectors.joining(","));
         Assertions.assertEquals("1,2,3", values, "Values of int[]{1, 2, 3} are 1, 2, 3");
 
         // test isSupportedSimpleType

@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
 
-public class TestObjectGeneratorSimpleTypes {
+class TestObjectGeneratorSimpleTypes {
     /*
         - Selectors variances
         - with Specs
@@ -19,7 +19,7 @@ public class TestObjectGeneratorSimpleTypes {
      */
 
     @Test
-    public void testWithSpecsWithAllMandatory() {
+    void testWithSpecsWithAllMandatory() {
 
         for (int i = 0; i < 100; i++) {
             Outer obj = ObjectGenerator.create(Outer.class)

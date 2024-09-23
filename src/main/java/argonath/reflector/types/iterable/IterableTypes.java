@@ -4,15 +4,14 @@ import argonath.reflector.reflection.ReflectiveAccessor;
 import argonath.reflector.registry.TypeRegistry;
 import argonath.utils.Assert;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Registry of iterable Types with extension support
  **/
 public class IterableTypes {
+    private IterableTypes() {
+    }
 
     private static TypeRegistry<IterableType> registry = new TypeRegistry<>(true);
 
@@ -28,7 +27,7 @@ public class IterableTypes {
     public static void registerBuiltInTypes() {
         register(Collection.class, BuiltInIterableTypes.COLLECTION);
         register(List.class, BuiltInIterableTypes.LIST);
-        register(List.class, BuiltInIterableTypes.LINKED_LIST);
+        register(LinkedList.class, BuiltInIterableTypes.LINKED_LIST);
         register(Set.class, BuiltInIterableTypes.SET);
         register(Map.class, BuiltInIterableTypes.MAP);
         register(Collection.class, BuiltInIterableTypes.ARRAY);
@@ -63,7 +62,7 @@ public class IterableTypes {
         if (iterableType == null) {
             throw new IllegalArgumentException("Class: " + classType + " is not an iterable type");
         }
-        return (Collection<Object>) iterableType.asCollection(object);
+        return iterableType.asCollection(object);
     }
 
     public static boolean isMap(IterableType type) {

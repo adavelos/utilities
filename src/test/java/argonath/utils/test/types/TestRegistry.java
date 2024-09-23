@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class TestRegistry {
 
     @Test
-    public void testRegistry() {
+    void testRegistry() {
 
         // Upwards-only: check that closest match is found upwards
         TypeRegistry<String> registry = new TypeRegistry<>(true);

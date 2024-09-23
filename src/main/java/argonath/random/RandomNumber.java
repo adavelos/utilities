@@ -3,6 +3,8 @@ package argonath.random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomNumber {
+    private RandomNumber() {
+    }
 
     /**
      * Returns an integer in the range: [origin, bound)

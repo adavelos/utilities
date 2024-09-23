@@ -20,7 +20,7 @@ public class TestBuiltInTypes {
     }
 
     @Test
-    public void testBigDecimal() {
+    void testBigDecimal() {
         Assertions.assertEquals("123", Numbers.bigDecimalToString(new BigDecimal("123")));
         Assertions.assertEquals("123.456", Numbers.bigDecimalToString(new BigDecimal("123.456")));
         Assertions.assertEquals("123", Numbers.bigIntegerToString(new BigInteger("123")));
@@ -30,7 +30,7 @@ public class TestBuiltInTypes {
     }
 
     @Test
-    public void testDates() {
+    void testDates() {
         Assertions.assertEquals("2021-01-01", DateTime.toString(DateTime.fromStringToDate("2021-01-01")));
         Assertions.assertEquals("2021-01-01T00:00:00", DateTime.toString(DateTime.fromStringToDateTime("2021-01-01T00:00:00")));
         Assertions.assertEquals("2021-01-01T00:00:00+02:00", DateTime.toString(DateTime.fromStringToOffsetDateTime("2021-01-01T00:00:00+02:00")));
@@ -50,7 +50,7 @@ public class TestBuiltInTypes {
     }
 
     @Test
-    public void testEmptyList() {
+    void testEmptyList() {
         List<?> list = Collections.emptyList();
         Assertions.assertTrue(list instanceof ArrayList, "list is ArrayList");
         Assertions.assertTrue(list.isEmpty(), "list is empty");

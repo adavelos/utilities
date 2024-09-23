@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class FilterParser {
+    private FilterParser() {
+    }
 
     private static final String INDEX_RANGE_FILTER_SEPARATOR = ":";
     public static final String SET_FILTER_SEPARATOR = ",";
@@ -45,10 +47,6 @@ public class FilterParser {
             Operator operator = Operator.values()[operatorIndices[0]];
             return OpParser.process(expression, operator);
         }
-    }
-
-    private static Filter processWithOperator(String expression, Operator operator) {
-        throw new UnsupportedOperationException("Filter with operator is not supported yet");
     }
 
     private static Filter processNoOperator(String expression) {

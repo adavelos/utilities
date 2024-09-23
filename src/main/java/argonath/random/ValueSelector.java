@@ -17,21 +17,32 @@ public class ValueSelector<T> {
 
     private boolean withReplacement;
 
-
     public ValueSelector(boolean withReplacement, Set<T> values) {
+        this(withReplacement, List.copyOf(values));
+    }
+
+    public ValueSelector(boolean withReplacement, List<T> values) {
         if (values.isEmpty()) {
             throw new IllegalArgumentException("Value Selector: Values set cannot be empty");
         }
         this.originalValues = List.copyOf(values);
         this.withReplacement = withReplacement;
-        reset();
+        if (!withReplacement) {
+            this.values = new ArrayList<>(originalValues);
+        } else {
+            this.values = originalValues;
+        }
     }
 
     public T drawValue(Long seed) {
         int size = values.size();
         if (size == 0) {
-            reset();
-            size = values.size();
+            if (!withReplacement) {
+                this.values = new ArrayList<>(originalValues);
+                size = values.size();
+            } else {
+                throw new IllegalStateException("Value Selector: Values set is empty");
+            }
         }
         int index = RandomNumber.getInteger(0, size);
         T value = values.get(index);
@@ -41,8 +52,5 @@ public class ValueSelector<T> {
         return value;
     }
 
-    private void reset() {
-        values = new ArrayList<>(originalValues);
-    }
 
 }

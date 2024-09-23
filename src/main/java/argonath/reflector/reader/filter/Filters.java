@@ -10,6 +10,9 @@ import argonath.reflector.types.iterable.IterationElement;
 import java.util.Collection;
 
 public class Filters {
+    private Filters() {
+    }
+
     public static final Filter NO_FILTER = (element, collection, readerContext) -> true;
 
     public static Collection<Object> apply(Filter filter, ValueMapper valueMapper, Collection<Object> inputCollection, ReaderContext context, IterableType iterableType) {

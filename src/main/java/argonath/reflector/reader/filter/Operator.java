@@ -1,9 +1,6 @@
 package argonath.reflector.reader.filter;
 
-import java.util.Arrays;
-import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Operators are used to match two values that resolve from ExpressionSelector tokens

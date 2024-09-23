@@ -1,8 +1,10 @@
 package argonath.utils;
 
-import java.util.concurrent.Callable;
-
 public class Assert {
+
+    private Assert() {
+    }
+
     public static void isTrue(boolean expr, String message) {
         if (!expr) {
             throw new IllegalArgumentException(message);

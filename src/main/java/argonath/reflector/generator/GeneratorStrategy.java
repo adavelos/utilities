@@ -6,7 +6,6 @@ import argonath.reflector.generator.model.Optionality;
 public enum GeneratorStrategy {
     ALL {
         public boolean populate(Optionality optionality) {
-            RANDOM:
             return true;
         }
     },

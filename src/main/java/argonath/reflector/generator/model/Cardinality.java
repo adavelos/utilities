@@ -1,10 +1,11 @@
 package argonath.reflector.generator.model;
 
 import argonath.random.RandomNumber;
+import argonath.reflector.generator.GeneratorContext;
 
 public class Cardinality {
     // always have a default cardinality
-    public static Cardinality DEFAULT = new Cardinality(1, 3, null);
+    public static final Cardinality DEFAULT = new Cardinality(1, 3, null);
 
     private Integer minSize;
     private Integer maxSize;
@@ -40,9 +41,9 @@ public class Cardinality {
         return maxSize;
     }
 
-    public Integer randomSize() {
+    public Integer randomSize(GeneratorContext ctx) {
         if (distribution != null) {
-            return distribution.generate(null);
+            return distribution.generate(ctx);
         }
         return RandomNumber.getInteger(minSize, maxSize + 1);
     }

@@ -11,10 +11,10 @@ import java.math.BigInteger;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 
-public class TestObjectGeneratorSpecsTypes {
+class TestObjectGeneratorSpecsTypes {
 
     @Test
-    public void testWithSpecsFile() {
+    void testWithSpecsFile() {
         TestClass obj = ObjectGenerator.create(TestClass.class)
                 .withSpecsFile("test.model.class.specs")
                 .generate();
@@ -24,7 +24,7 @@ public class TestObjectGeneratorSpecsTypes {
 
 
     @Test
-    public void testSpecsString() {
+    void testSpecsString() {
         TestClass obj = ObjectGenerator.create(TestClass.class)
                 .withSpecs(FieldSelector.ofPath("/intField"), "M|randomInt(5,10)")
                 .withSpecs(FieldSelector.ofPath("/floatField"), "M|randomFloat(12.0,14.5)")
@@ -49,7 +49,7 @@ public class TestObjectGeneratorSpecsTypes {
     }
 
     @Test
-    public void testSpecsCompleteString() {
+    void testSpecsCompleteString() {
         TestClass obj = ObjectGenerator.create(TestClass.class)
                 .withSpecs("/intField=M|randomInt(5,10)")
                 .withSpecs("/floatField=M|randomFloat(12.0,14.5)")
@@ -81,7 +81,6 @@ public class TestObjectGeneratorSpecsTypes {
         Assertions.assertTrue(obj.charField >= 'c' && obj.charField <= 't');
         Assertions.assertTrue(obj.byteField >= Byte.MIN_VALUE && obj.byteField <= Byte.MAX_VALUE);
         Assertions.assertTrue(obj.shortField >= 5 && obj.shortField <= 10);
-        Assertions.assertNotNull(obj.booleanField);
         Assertions.assertEquals(10, obj.stringField.length());
         Assertions.assertTrue(obj.stringField.matches("[a-zA-Z0-9]{10}"));
 

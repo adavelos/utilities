@@ -19,7 +19,7 @@ public class TestReflectionMutator {
 
 
     @Test
-    public void testMutator() {
+    void testMutator() {
         TestMutatorClass sample = new TestMutatorClass("string", 1, 2L, 3.0f, 4.0, true, new BigDecimal(5), new BigInteger("6"), new Object());
 
         ReflectiveMutator.setFieldValue(ReflectiveAccessor.getField("stringField", TestMutatorClass.class), sample, "sampleString");

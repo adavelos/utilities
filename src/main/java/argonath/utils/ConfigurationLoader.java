@@ -9,12 +9,14 @@ import java.util.Map;
 import java.util.Properties;
 
 public class ConfigurationLoader {
+    private ConfigurationLoader() {
+    }
+
     public static Map<String, String> load(String filename) {
         Map<String, String> configMap = new HashMap<>();
         Properties prop = new Properties();
         try (InputStream input = Configuration.class.getClassLoader().getResourceAsStream(filename)) {
             if (input == null) {
-                System.out.println("Configuration file: " + filename + " not found, using default property values");
                 return configMap;
             }
 
@@ -26,7 +28,7 @@ public class ConfigurationLoader {
             }
 
         } catch (IOException ex) {
-            throw new RuntimeException("Error loading configuration file: " + filename, ex);
+            throw new IllegalArgumentException("Error loading configuration file: " + filename, ex);
         }
 
         return configMap;

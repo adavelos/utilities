@@ -12,6 +12,9 @@ import java.util.*;
 
 class BuiltInIterableTypes {
 
+    private BuiltInIterableTypes() {
+    }
+
     static final IterableType COLLECTION = new CollectionType();
     static final IterableType LIST = new ListType();
     static final IterableType LINKED_LIST = new LinkedListType();
@@ -86,6 +89,7 @@ class BuiltInIterableTypes {
             return new ArrayList<>(asMap.entrySet());
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Object fromCollection(Collection<?> collection, Class<?> clazz) {
             Class<?> elementType = ReflectiveAccessor.getClassFromCollection(collection);

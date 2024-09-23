@@ -11,12 +11,12 @@ import java.math.BigInteger;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 
-public class TestSpecsParser {
+class TestSpecsParser {
 
     private SpecsExpressionParser specsExpressionParser;
 
     @Test
-    public void testParseSpec() {
+    void testParseSpec() {
         String spec = "M|size(1, 3)|randomString(an10)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
 
@@ -30,7 +30,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testParseSpecOptional() {
+    void testParseSpecOptional() {
         String spec = "O|size(1, 3)|randomString(an10)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
 
@@ -44,7 +44,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testParseSpecDifferentCardinality() {
+    void testParseSpecDifferentCardinality() {
         String spec = "M|size(2, 4)|randomString(an10)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
 
@@ -58,7 +58,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testParseSpecDifferentGenerator() {
+    void testParseSpecDifferentGenerator() {
         String spec = "M|size(1, 3)|randomInt(1, 10)";
         ObjectSpecs<Integer> result = SpecsExpressionParser.parseSpec("/path", spec);
 
@@ -72,7 +72,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomString() {
+    void testRandomString() {
         String spec = "M|randomString(an10)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -83,7 +83,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomInt() {
+    void testRandomInt() {
         String spec = "M|randomInt(1, 10)";
         ObjectSpecs<Integer> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -94,7 +94,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testParseCharRange() {
+    void testParseCharRange() {
         String spec = "M|randomChar(a, z)";
         ObjectSpecs<Character> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -105,7 +105,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomCharSingleRange() {
+    void testRandomCharSingleRange() {
         String spec = "M|randomChar(f)";
         ObjectSpecs<Character> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -116,7 +116,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomChar() {
+    void testRandomChar() {
         String spec = "M|randomChar()";
         ObjectSpecs<Character> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -128,7 +128,7 @@ public class TestSpecsParser {
 
     // randomShort, randomByte, randomLong, randomDouble, randomFloat, randomBigInteger, randomBigDecimal, randomByteArray
     @Test
-    public void testRandomShort() {
+    void testRandomShort() {
         String spec = "M|randomShort(1, 10)";
         ObjectSpecs<Short> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -139,7 +139,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomByte() {
+    void testRandomByte() {
         String spec = "M|randomByte(1, 10)";
         ObjectSpecs<Byte> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -150,7 +150,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomByteNoArgs() {
+    void testRandomByteNoArgs() {
         String spec = "M|randomByte()";
         ObjectSpecs<Byte> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -161,7 +161,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomByteSingleArg() {
+    void testRandomByteSingleArg() {
         String spec = "M|randomByte(10)";
         ObjectSpecs<Byte> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -172,7 +172,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomLong() {
+    void testRandomLong() {
         String spec = "M|randomLong(1, 10)";
         ObjectSpecs<Long> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -183,7 +183,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomDouble() {
+    void testRandomDouble() {
         String spec = "M|randomDouble(1, 10)";
         ObjectSpecs<Double> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -194,7 +194,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomFloat() {
+    void testRandomFloat() {
         String spec = "M|randomFloat(1, 10)";
         ObjectSpecs<Float> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -205,7 +205,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomBigInteger() {
+    void testRandomBigInteger() {
         String spec = "M|randomBigInteger(1, 10)";
         ObjectSpecs<BigInteger> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -216,7 +216,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomBigDecimal() {
+    void testRandomBigDecimal() {
         String spec = "M|randomBigDecimal(1, 10)";
         ObjectSpecs<BigDecimal> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -227,7 +227,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomByteArray() {
+    void testRandomByteArray() {
         String spec = "M|randomByteArray(100, 200)";
         ObjectSpecs<byte[]> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -238,7 +238,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomLocalDate() {
+    void testRandomLocalDate() {
         String spec = "M|randomLocalDate(-10, 10)";
         ObjectSpecs<LocalDate> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -249,7 +249,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomLocalDateTime() {
+    void testRandomLocalDateTime() {
         String spec = "M|randomLocalDateTime(-100, -50)";
         ObjectSpecs<LocalDateTime> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -260,7 +260,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomOffsetDateTime() {
+    void testRandomOffsetDateTime() {
         String spec = "M|randomOffsetDateTime(0, 10)";
         ObjectSpecs<OffsetDateTime> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -271,7 +271,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomOffsetTime() {
+    void testRandomOffsetTime() {
         String spec = "M|randomOffsetTime(0, 10)";
         ObjectSpecs<OffsetTime> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -284,7 +284,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomZonedDateTime() {
+    void testRandomZonedDateTime() {
         String spec = "M|randomZonedDateTime(0, 10)";
         ObjectSpecs<ZonedDateTime> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -295,7 +295,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testRandomBoolean() {
+    void testRandomBoolean() {
         String spec = "M|randomBoolean()";
         ObjectSpecs<Boolean> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -306,7 +306,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testNow() {
+    void testNow() {
         String spec = "M|now()";
         ObjectSpecs<LocalDateTime> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -317,7 +317,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testToday() {
+    void testToday() {
         String spec = "M|today()";
         ObjectSpecs<LocalDate> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -328,7 +328,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testLoremIpsum() {
+    void testLoremIpsum() {
         String spec = "M|loremIpsum(100)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -339,7 +339,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testLoremIpsumRange() {
+    void testLoremIpsumRange() {
         String spec = "M|loremIpsum(100, 500)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -350,7 +350,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testSequence() {
+    void testSequence() {
         String spec = "M|sequence(1, 1)";
         ObjectSpecs<Integer> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -361,7 +361,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testValueSelectorWithReplacement() {
+    void testValueSelectorWithReplacement() {
         String spec = "M|valueSelector(true,A,B,C)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -372,7 +372,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testValueSelectorWithoutReplacement() {
+    void testValueSelectorWithoutReplacement() {
         String spec = "M|valueSelector(false,A,B,C)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -383,7 +383,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testEnumSelector() {
+    void testEnumSelector() {
         String spec = "M|enumSelector(argonath.utils.test.generator.TestSpecsParser$MyEnum, false)";
         ObjectSpecs<MyEnum> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -394,7 +394,7 @@ public class TestSpecsParser {
     }
 
     @Test
-    public void testSize() {
+    void testSize() {
         String spec = "M|size(1, 3)";
         ObjectSpecs<String> result = SpecsExpressionParser.parseSpec("/path", spec);
         Assertions.assertNotNull(result);
@@ -403,7 +403,7 @@ public class TestSpecsParser {
         Assertions.assertEquals(result.cardinality().maxSize(), 3);
     }
 
-    public enum MyEnum {
+    enum MyEnum {
         A, B, C
     }
 

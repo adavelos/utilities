@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class Numbers {
+    private Numbers() {
+    }
+
     public static String bigDecimalToString(BigDecimal t) {
         if (t == null) {
             return null;

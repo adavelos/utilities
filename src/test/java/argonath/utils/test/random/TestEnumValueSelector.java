@@ -14,7 +14,7 @@ public class TestEnumValueSelector {
     }
 
     @Test
-    public void testEnumValueSelectorWithReplacement() {
+    void testEnumValueSelectorWithReplacement() {
         EnumValueSelector<TestEnum> selector = new EnumValueSelector<>(true, TestEnum.class);
         Set<TestEnum> generatedValues = new HashSet<>();
         int iterations = 1000;
@@ -30,7 +30,7 @@ public class TestEnumValueSelector {
     }
 
     @Test
-    public void testEnumValueSelectorWithoutReplacement() {
+    void testEnumValueSelectorWithoutReplacement() {
         EnumValueSelector<TestEnum> selector = new EnumValueSelector<>(false, TestEnum.class);
         Set<TestEnum> generatedValues = new HashSet<>();
         int expectedSize = TestEnum.values().length;
@@ -51,7 +51,7 @@ public class TestEnumValueSelector {
     }
 
     @Test
-    public void testSingleValueEnum() {
+    void testSingleValueEnum() {
         enum SingleValueEnum {SINGLE}
         EnumValueSelector<SingleValueEnum> selector = new EnumValueSelector<>(false, SingleValueEnum.class);
 

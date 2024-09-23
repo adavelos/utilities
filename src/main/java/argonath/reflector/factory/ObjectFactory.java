@@ -12,9 +12,11 @@ import java.util.function.Supplier;
  * Provides methods to instantiate objects and arrays of objects, using a Type Registry with default value suppliers.
  */
 public class ObjectFactory {
+    private ObjectFactory() {
+    }
 
     // Registry for default values of various types (i.e. collections)
-    private static TypeRegistry<Supplier<?>> DEFAULT_VALUES = new TypeRegistry<>(false);
+    private static final TypeRegistry<Supplier<?>> DEFAULT_VALUES = new TypeRegistry<>(false);
 
     public static <T> void register(Class<T> type, Supplier<T> generator) {
         DEFAULT_VALUES.register(type, generator);

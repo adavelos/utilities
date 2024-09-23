@@ -4,6 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WcMatcher {
+    private WcMatcher() {
+    }
 
     public static boolean match(String value, String pattern) {
         // Convert wildcard pattern to regex pattern

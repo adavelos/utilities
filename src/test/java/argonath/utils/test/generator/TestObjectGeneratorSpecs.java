@@ -8,10 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class TestObjectGeneratorSpecs {
+class TestObjectGeneratorSpecs {
 
     @Test
-    public void testWithSpecsFile() {
+    void testWithSpecsFile() {
         Outer obj = ObjectGenerator.create(Outer.class)
                 .withSpecsFile("test.class.specs")
                 .generate();
@@ -123,8 +123,8 @@ public class TestObjectGeneratorSpecs {
         Map<String, String> stringMap;
         List<Integer> intList;
         Map<Integer, Integer> intMap;
-        Map<Integer, String> intStringMap;
-        Map<String, Integer> stringIntMap;
+     //   Map<Integer, String> intStringMap;
+     //   Map<String, Integer> stringIntMap;
         String toBeIgnored;
 
         Inner inner;

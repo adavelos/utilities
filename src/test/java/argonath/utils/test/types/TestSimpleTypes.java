@@ -18,27 +18,27 @@ public class TestSimpleTypes {
     }
 
     @Test
-    public void testSimpleType() {
+    void testSimpleType() {
         assertNotNull(SimpleTypes.simpleType(String.class));
         assertNotNull(SimpleTypes.simpleType(Integer.class));
         assertNull(SimpleTypes.simpleType(List.class));
     }
 
     @Test
-    public void testIsSimpleType() {
+    void testIsSimpleType() {
         assertTrue(SimpleTypes.isSimpleType(String.class));
         assertTrue(SimpleTypes.isSimpleType(Integer.class));
         assertFalse(SimpleTypes.isSimpleType(List.class));
     }
 
     @Test
-    public void testRegister() {
+    void testRegister() {
         SimpleTypes.register(CustomType.class, new CustomTypeSimpleType());
         assertTrue(SimpleTypes.isSimpleType(CustomType.class));
     }
 
     @Test
-    public void testFromToString() {
+    void testFromToString() {
         SimpleType<String> stringType = SimpleTypes.simpleType(String.class);
         assertEquals("test", stringType.toString(stringType.fromString("test")));
 

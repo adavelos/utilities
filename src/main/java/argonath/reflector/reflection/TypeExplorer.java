@@ -4,9 +4,15 @@ import java.lang.reflect.*;
 import java.util.List;
 
 public class TypeExplorer {
+    private TypeExplorer() {
+    }
 
     public static Type type(Type type) {
         return ((ParameterizedType) type).getActualTypeArguments()[0];
+    }
+
+    public static Class<?> elementType(Class<?> genericClass) {
+        return (Class<?>) type(genericClass);
     }
 
     public static boolean isArray(Type type) {
@@ -14,17 +20,16 @@ public class TypeExplorer {
     }
 
     public static List<Type> nestedTypes(Type type) {
-        if (type instanceof ParameterizedType) {
-            ParameterizedType paramType = (ParameterizedType) type;
+        if (type instanceof ParameterizedType paramType) {
             return List.of(paramType.getActualTypeArguments());
         } else if (type instanceof Class<?> && ((Class<?>) type).isArray()) {
             return List.of(((Class<?>) type).getComponentType());
-        } else if (type instanceof GenericArrayType) {
-            return List.of(((GenericArrayType) type).getGenericComponentType());
-        } else if (type instanceof WildcardType) {
-            return List.of(((WildcardType) type).getUpperBounds());
-        } else if (type instanceof TypeVariable) {
-            List<Type> bounds = List.of(((TypeVariable<?>) type).getBounds());
+        } else if (type instanceof GenericArrayType genType) {
+            return List.of(genType.getGenericComponentType());
+        } else if (type instanceof WildcardType wcType) {
+            return List.of(wcType.getUpperBounds());
+        } else if (type instanceof TypeVariable<?> typeVar) {
+            List<Type> bounds = List.of(typeVar.getBounds());
             return bounds;
         }
         return List.of();
